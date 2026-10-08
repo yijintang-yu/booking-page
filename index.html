@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>線上預約</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; background-color: #f4f5f7; margin: 0; }
+    .card { background: white; padding: 22px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 480px; margin: 0 auto; }
+    h2 { text-align: center; color: #1DB446; margin-top: 0; margin-bottom: 20px; font-size: 22px; }
+    
+    /* 最新空檔公告區塊 */
+    .slots-box { background-color: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; }
+    .slots-title { font-weight: bold; color: #2e7d32; font-size: 15px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .slots-content { font-size: 14px; color: #333; line-height: 1.6; white-space: pre-line; margin: 0; }
+
+    label { font-weight: bold; display: block; margin-top: 16px; margin-bottom: 6px; color: #333; font-size: 15px; }
+    input[type="text"], input[type="tel"], select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: #1DB446; }
+    .radio-group { margin-top: 8px; display: flex; gap: 24px; }
+    .radio-group label { font-weight: normal; margin-top: 0; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 16px; }
+    button { width: 100%; background-color: #1DB446; color: white; border: none; padding: 14px; font-size: 17px; font-weight: bold; border-radius: 8px; margin-top: 28px; cursor: pointer; }
+    button:hover { background-color: #169d3c; }
+    .sub-text { font-size: 13px; color: #777; font-weight: normal; margin-left: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>📅 線上預約</h2>
+
+  <!-- 📢 最新開放空檔展示區（有異動直接修改這裡的文字即可） -->
+  <div class="slots-box">
+    <div class="slots-title">📢 本週最新空檔：</div>
+    <p class="slots-content">
+✅10/9
+11：00、14：00、16：00
+18：00、19：00
+
+✅10/10 
+10：00、11：00、14：00、15：00
+16：00、18：00、19：00、20：00
+
+✅10/11 
+11：00、14：00、15：00、16：00
+18：00、19：00、20：00
+
+✅10/12  
+10：00、11：00、15：00、18：00、19：00
+
+🔺以上為所有老師的空檔，若有指定老師請直接與小編預約
+
+🔺還未列出的日期或有想預約特定的時間，歡迎直接向小編詢問😊
+
+🔺空檔隨時更新，若有合適的時段建議趕快約起來喔！
+
+（歡迎直接參考上方時段進行預約喔！）</p>
+  </div>
+
+  <label for="name">1. 中文全名：</label>
+  <input type="text" id="name" placeholder="請輸入中文全名">
+
+  <label for="phone">2. 電話：</label>
+  <input type="tel" id="phone" placeholder="請輸入手機號碼">
+
+  <label for="time">3. 預約時段：<span class="sub-text">（可提供3個方便時段）</span></label>
+  <textarea id="time" rows="3" placeholder="例如：&#10;1. 10/13 10：00&#10;2. 10/14 15：00&#10;3. 10/15 19：00"></textarea>
+
+  <label for="teacher">4. 指定老師：</label>
+  <select id="teacher">
+    <option value="田老師">田老師</option>
+    <option value="張老師">張老師</option>
+    <option value="李老師">李老師</option>
+    <option value="游老師">游老師</option>
+    <option value="不指定由小編安排">不指定由小編安排</option>
+  </select>
+
+  <label for="source">5. 如何得知本店？</label>
+  <select id="source">
+    <option value="網路">網路</option>
+    <option value="路過">路過</option>
+    <option value="親友介紹">親友介紹</option>
+  </select>
+
+  <label>是否為本人預約：</label>
+  <div class="radio-group">
+    <label><input type="radio" name="isSelf" value="是" checked> 是</label>
+    <label><input type="radio" name="isSelf" value="否"> 否</label>
+  </div>
+
+  <button onclick="sendBooking()">確認送出預約</button>
+</div>
+
+<script>
+  // LIFF 初始化（之後拿到 LIFF ID 會再回來填入）
+  liff.init({ liffId: "2011937745-QNZCNd9t" }).catch(err => console.error(err));
+
+  function sendBooking() {
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const time = document.getElementById('time').value.trim();
+    const teacher = document.getElementById('teacher').value;
+    const source = document.getElementById('source').value;
+    const isSelfRadio = document.querySelector('input[name="isSelf"]:checked');
+    const isSelf = isSelfRadio ? isSelfRadio.value : '是';
+
+    if (!name || !phone || !time) {
+      alert('請填寫完整資訊（姓名、電話與預約時段）喔！');
+      return;
+    }
+
+    const msg = `📨 【預約申請已送出】\n1. 中文全名：${name}\n2. 電話：${phone}\n3. 預約時段：\n${time}\n4. 指定老師：${teacher}\n5. 如何得知本店：${source}\n是否為本人預約：${isSelf}`;
+
+    liff.sendMessages([{ type: 'text', text: msg }])
+      .then(() => {
+        alert('小編收到預約申請後會盡快回覆喔！ 謝謝😊');
+        liff.closeWindow();
+      })
+      .catch((err) => {
+        alert('請在 LINE 裡面開啟此網頁才能送出預約訊息喔！\n錯誤訊息：' + err);
+      });
+  }
+</script>
+
+</body>
+</html>
