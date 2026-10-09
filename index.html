@@ -31,14 +31,15 @@
       margin-top: 5px;
       margin-bottom: 18px;
     }
+    /* 質感暖黃風樣式 */
     .notice-box {
-      background-color: #fff9e6;;
+      background-color: #fff9e6;
       border-left: 4px solid #ffb800;
       padding: 12px;
       margin-bottom: 20px;
       border-radius: 4px;
       font-size: 0.9em;
-      ​color: #5c4300;;
+      color: #5c4300;
       line-height: 1.6;
       word-wrap: break-word;
     }
@@ -98,9 +99,9 @@
 <div class="container">
   <h2>📅易筋堂線上預約</h2>
 
-  <!-- 最新釋出空檔公告 -->
+  <!-- 最新釋出空檔公告（質感暖黃風） -->
   <div class="notice-box">
-    <div style="font-weight: bold; font-size: 1.05em; margin-bottom: 8px;">📢最新空檔 </div>
+    <div style="font-weight: bold; font-size: 1.05em; margin-bottom: 8px; color: #5c4300;">📢 【最新熱門空檔】</div>
     <div style="line-height: 1.8;">
       <div>📌 <strong>10/9：</strong>16:00、19:00</div>
       <div>📌 <strong>10/10：</strong>10:00、11:00、14:00、15:00、16:00、18:00、19:00、20:00</div>
@@ -108,9 +109,9 @@
       <div>📌 <strong>10/12：</strong>10:00、11:00、15:00、18:00、19:00</div>
     </div>
     
-    <hr style="border: 0; border-top: 1px dashed #b8e2c8; margin: 10px 0;">
+    <hr style="border: 0; border-top: 1px dashed #f2d29b; margin: 10px 0;">
     
-    <div style="font-size: 0.88em; line-height: 1.6; color: #235230;">
+    <div style="font-size: 0.88em; line-height: 1.6; color: #7a5c10;">
       🔺 以上為所有師父的空檔，若有指定師父請直接與小編預約<br>
       🔺 還未列出的日期或有想預約特定的時間，歡迎直接向小編詢問 😊<br>
       🔺 空檔隨時更新，若有合適的時段建議儘快約起來喔！<br><br>
@@ -151,25 +152,24 @@
     </div>
 
     <!-- 四、預約方案 -->
-<div class="form-group">
-  <label for="duration">四、預約方案</label>
-  <select id="duration" name="duration" required>
-    <option value="60分鐘 全方位放鬆整復">60分鐘 全方位放鬆整復</option>
-    <option value="120分鐘 全方位放鬆整復">120分鐘 全方位放鬆整復</option>
-  </select>
-</div>
-
-
-
-    <!-- 五、指定老師 -->
     <div class="form-group">
-      <label for="teacher">五、指定老師</label>
+      <label for="duration">四、預約方案</label>
+      <select id="duration" name="duration" required>
+        <option value="60分鐘 全方位放鬆整復">60分鐘 全方位放鬆整復</option>
+        <option value="120分鐘 全方位放鬆整復">120分鐘 全方位放鬆整復</option>
+      </select>
+    </div>
+
+    <!-- 五、指定師父 -->
+    <div class="form-group">
+      <label for="teacher">五、指定師父</label>
       <select id="teacher" name="teacher" required>
         <option value="不指定">不指定</option>
-        <option value="田老師">田老師</option>
-        <option value="張老師">張老師</option>
-        <option value="李老師">李老師</option>
-        <option value="游老師">游老師</option>
+        <option value="游師父">游師父</option>
+        <option value="李師父">李師父</option>
+        <option value="田師父">田師父</option>
+        <option value="周師父">周師父</option>
+        <option value="張師父">張師父</option>
       </select>
     </div>
 
@@ -180,7 +180,6 @@
         <option value="網路">網路</option>
         <option value="親友介紹">親友介紹</option>
         <option value="路過">路過</option>
-        <option value="住附近">住附近</option>
       </select>
     </div>
 
@@ -233,15 +232,15 @@
     const note = document.getElementById('note').value;
 
     // 組合訊息
-    const messageText = ✅線上預約申請已送出
-一、中文全名：${name}
-二、聯絡電話：${phone}
-三、預約日期：${date} ${time}
-四、預約方案：${duration}
-五、指定師父：${teacher}
-六、得知管道：${source}
-七、是否本人：${isSelf}
-八、留言備註：${note || '無'}`;
+    const messageText = `✅線上預約申請已送出
+1、中文全名：${name}
+2、聯絡電話：${phone}
+3、預約日期：${date} ${time}
+4、預約方案：${duration}
+5、指定師父：${teacher}
+6、得知管道：${source}
+7、是否本人：${isSelf}
+8、留言備註：${note || '無'}`;
 
     // 發送訊息至 LINE
     liff.sendMessages([
