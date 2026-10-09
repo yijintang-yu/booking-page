@@ -100,7 +100,7 @@
   <h2>📅易筋堂線上預約</h2>
 
   <div class="notice-box">
-    <div style="font-weight: bold; font-size: 1.05em; margin-bottom: 8px;">📢最新空檔</div>
+    <div style="font-weight: bold; font-size: 1.05em; margin-bottom: 8px;">📢最新空檔 </div>
     <div style="line-height: 1.8;">
       <div>📌 <strong>10/9：</strong>16:00、19:00</div>
       <div>📌 <strong>10/10：</strong>10:00、11:00、14:00、15:00、16:00、18:00、19:00、20:00</div>
@@ -133,7 +133,7 @@
       <label>三、預約日期與時段</label>
       <div style="display: flex; gap: 10px;">
         <input type="date" id="date" name="date" required style="flex: 1;">
-        <input type="time" id="time" name="time" required style="flex: 1;">
+        <input type="time" id="time" name="time" step="3600" required style="flex: 1;">
       </div>
     </div>
 
@@ -213,7 +213,7 @@
     const note = document.getElementById('note').value;
 
     // 組合訊息
-    const messageText = `【線上預約申請】
+    const messageText = `【✅預約申請已送出】
 一、中文全名：${name}
 二、聯絡電話：${phone}
 三、預約日期：${date} ${time}
