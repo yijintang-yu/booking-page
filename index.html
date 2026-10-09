@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>線上預約</title>
+  <title>易筋堂線上預約</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     * {
@@ -13,7 +13,7 @@
     body {
       background-color: #f4f6f8;
       margin: 0;
-      padding: 15px;
+      padding: 12px;
       display: flex;
       justify-content: center;
     }
@@ -21,14 +21,15 @@
       background-color: #ffffff;
       width: 100%;
       max-width: 500px;
-      padding: 20px;
+      padding: 18px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
     h2 {
       text-align: center;
       color: #333;
-      margin-bottom: 20px;
+      margin-top: 5px;
+      margin-bottom: 18px;
     }
     .notice-box {
       background-color: #eef9f2;
@@ -38,7 +39,8 @@
       border-radius: 4px;
       font-size: 0.9em;
       color: #2b5435;
-      line-height: 1.5;
+      line-height: 1.6;
+      word-wrap: break-word;
     }
     .form-group {
       margin-bottom: 18px;
@@ -76,167 +78,4 @@
     }
     .submit-btn {
       width: 100%;
-      background-color: #06c755;
-      color: white;
-      border: none;
-      padding: 14px;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background-color 0.2s;
-    }
-    .submit-btn:hover {
-      background-color: #05b34c;
-    }
-  </style>
-</head>
-<body>
-
-<div class="container">
-  <h2>🗓️易筋堂線上預約</h2>
-
-    <div class="notice-box">
-    <div style="font-weight: bold; font-size: 1.05em; margin-bottom: 8px;">📢 最新空檔 </div>
-    <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-      <li><strong>10/9：</strong>16:00、19:00</li>
-      <li><strong>10/10：</strong>10:00、11:00、14:00、15:00、16:00、18:00、19:00、20:00</li>
-      <li><strong>10/11：</strong>11:00、14:00、15:00、16:00、18:00、19:00、20:00</li>
-      <li><strong>10/12：</strong>10:00、11:00、15:00、18:00、19:00</li>
-    </ul>
-    
-    <hr style="border: 0; border-top: 1px dashed #b8e2c8; margin: 10px 0;">
-    
-    <div style="font-size: 0.88em; line-height: 1.6; color: #235230;">
-      🔺 以上為所有師父的空檔，若有指定師父請直接與小編預約<br>
-      🔺 還未列出的日期或有想預約特定的時間，歡迎直接向小編詢問 😊<br>
-      🔺 空檔隨時更新，若有合適的時段建議儘快約起來喔！<br><br>
-      歡迎填寫預約表單，小編收到後會儘快為您確認並安排時段！
-    </div>
-  </div>
-
-    歡迎填寫預約表單，小編收到後會盡快為您確認並安排時段！
-  </div>
-
-  <form id="bookingForm">
-    <div class="form-group">
-      <label for="name">一、中文全名</label>
-      <input type="text" id="name" name="name" required placeholder="請輸入中文全名">
-    </div>
-
-    <div class="form-group">
-      <label for="phone">二、聯絡電話</label>
-      <input type="tel" id="phone" name="phone" required placeholder="請輸入電話">
-    </div>
-
-    <div class="form-group">
-      <label>三、預約日期與時段</label>
-      <div style="display: flex; gap: 10px;">
-        <input type="date" id="date" name="date" required style="flex: 1;">
-        <input type="time" id="time" name="time" required style="flex: 1;">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="duration">四、預約方案</label>
-      <select id="duration" name="duration" required>
-        <option value="60分鐘">60分鐘</option>
-        <option value="120分鐘">120分鐘</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="teacher">五、指定師父</label>
-      <select id="teacher" name="teacher" required>
-        <option value="不指定">不指定</option>
-        <option value="游師父">游師父</option>
-        <option value="李師父">李師父</option>
-        <option value="田師父">田師父</option>
-        <option value="張師父">張師父</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="source">六、如何得知本店？</label>
-      <select id="source" name="source" required>
-        <option value="網路">網路</option>
-        <option value="親友介紹">親友介紹</option>
-        <option value="路過">路過</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>七、是否為本人預約</label>
-      <div class="radio-group">
-        <label><input type="radio" name="isSelf" value="是" checked> 是</label>
-        <label><input type="radio" name="isSelf" value="否"> 否</label>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="note">八、留言備註（選填）</label>
-      <textarea id="note" name="note" rows="3" placeholder="如有身體特殊狀況或額外需求請在此備註"></textarea>
-    </div>
-
-    <button type="submit" class="submit-btn">確認送出預約</button>
-  </form>
-</div>
-
-<script>
-  // 初始化 LIFF
-  liff.init({ liffId: "2011937745-QNZCNd9t" }).then(() => {
-    console.log("LIFF Initialized");
-  }).catch((err) => {
-    console.error("LIFF Initialization failed", err);
-  });
-
-  // 表單送出處理
-  document.getElementById('bookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    // 檢查是否在 LINE 環境內開啟
-    if (!liff.isInClient()) {
-      alert("請在 LINE 裡面開啟此網頁才能送出預約訊息喔！\n錯誤訊息：非 LINE 內建瀏覽器");
-      return;
-    }
-
-    // 取得欄位數值
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('time').value;
-    const duration = document.getElementById('duration').value;
-    const teacher = document.getElementById('teacher').value;
-    const source = document.getElementById('source').value;
-    const isSelf = document.querySelector('input[name="isSelf"]:checked').value;
-    const note = document.getElementById('note').value;
-
-    // 組合訊息
-    const messageText = `【✅預約申請已送出】
-一、顧客姓名：${name}
-二、聯絡電話：${phone}
-三、預約日期：${date} ${time}
-四、預約方案：${duration}
-五、指定師父：${teacher}
-六、得知管道：${source}
-七、是否本人：${isSelf}
-八、留言備註：${note || '無'}`;
-
-    // 發送訊息至 LINE
-    liff.sendMessages([
-      {
-        type: 'text',
-        text: messageText
-      }
-    ]).then(() => {
-      alert("小編收到預約申請後會盡快回覆喔！ 謝謝😊");
-      liff.closeWindow();
-    }).catch((err) => {
-      alert("發送失敗，請重試或直接私訊小編。\n錯誤訊息：" + err.message);
-    });
-  });
-</script>
-
-</body>
-</html>
+      background
