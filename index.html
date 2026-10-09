@@ -54,7 +54,6 @@
     input[type="text"],
     input[type="tel"],
     input[type="date"],
-    input[type="time"],
     select,
     textarea {
       width: 100%;
@@ -99,6 +98,7 @@
 <div class="container">
   <h2>📅易筋堂線上預約</h2>
 
+  <!-- 最新釋出空檔公告 -->
   <div class="notice-box">
     <div style="font-weight: bold; font-size: 1.05em; margin-bottom: 8px;">📢最新空檔 </div>
     <div style="line-height: 1.8;">
@@ -119,24 +119,38 @@
   </div>
 
   <form id="bookingForm">
+    <!-- 一、中文全名 -->
     <div class="form-group">
       <label for="name">一、中文全名</label>
       <input type="text" id="name" name="name" required placeholder="請輸入中文全名">
     </div>
 
+    <!-- 二、聯絡電話 -->
     <div class="form-group">
       <label for="phone">二、聯絡電話</label>
       <input type="tel" id="phone" name="phone" required placeholder="請輸入電話">
     </div>
 
+    <!-- 三、預約日期與時段 -->
     <div class="form-group">
       <label>三、預約日期與時段</label>
       <div style="display: flex; gap: 10px;">
         <input type="date" id="date" name="date" required style="flex: 1;">
-        <input type="time" id="time" name="time" step="3600" required style="flex: 1;">
+        <select id="time" name="time" required style="flex: 1;">
+          <option value="" disabled selected>選擇時間</option>
+          <option value="10:00">10:00</option>
+          <option value="11:00">11:00</option>
+          <option value="14:00">14:00</option>
+          <option value="15:00">15:00</option>
+          <option value="16:00">16:00</option>
+          <option value="18:00">18:00</option>
+          <option value="19:00">19:00</option>
+          <option value="20:00">20:00</option>
+        </select>
       </div>
     </div>
 
+    <!-- 四、預約方案 -->
     <div class="form-group">
       <label for="duration">四、預約方案</label>
       <select id="duration" name="duration" required>
@@ -145,18 +159,19 @@
       </select>
     </div>
 
+    <!-- 五、指定師父 -->
     <div class="form-group">
       <label for="teacher">五、指定師父</label>
       <select id="teacher" name="teacher" required>
         <option value="不指定">不指定</option>
-        <option value="游師父">游師父</option>
-        <option value="李師父">李師父</option>
-        <option value="田師父">田師父</option>
-        <option value="周師父">周師父</option>
-        <option value="張師父">張師父</option>
+        <option value="田老師">田老師</option>
+        <option value="張老師">張老師</option>
+        <option value="李老師">李老師</option>
+        <option value="游老師">游老師</option>
       </select>
     </div>
 
+    <!-- 六、如何得知本店？ -->
     <div class="form-group">
       <label for="source">六、如何得知本店？</label>
       <select id="source" name="source" required>
@@ -166,6 +181,7 @@
       </select>
     </div>
 
+    <!-- 七、是否為本人預約 -->
     <div class="form-group">
       <label>七、是否為本人預約</label>
       <div class="radio-group">
@@ -174,6 +190,7 @@
       </div>
     </div>
 
+    <!-- 八、留言備註 (選填) -->
     <div class="form-group">
       <label for="note">八、留言備註（選填）</label>
       <textarea id="note" name="note" rows="3" placeholder="如有身體特殊狀況或額外需求請在此備註"></textarea>
@@ -213,7 +230,7 @@
     const note = document.getElementById('note').value;
 
     // 組合訊息
-    const messageText = `【✅預約申請已送出】
+    const messageText = `【線上預約申請】
 一、中文全名：${name}
 二、聯絡電話：${phone}
 三、預約日期：${date} ${time}
