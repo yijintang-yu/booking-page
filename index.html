@@ -242,20 +242,21 @@
 7、是否本人：${isSelf}
 8、留言備註：${note || '無'}`;
 
-    // 發送訊息至 LINE
+      // 發送訊息至 LINE
     liff.sendMessages([
       {
         type: 'text',
         text: messageText
       }
     ]).then(() => {
-      alert("小編收到預約申請後會盡快回覆喔！ 謝謝😊");
+      let successMsg = "小編收到預約申請後會盡快回覆喔！謝謝 😊";
+      if (isSelf === "否") {
+        successMsg += "\n\n⚠️ 貼心提醒：非本人預約方案恕不適用會員優惠，將以原價計費：\n• 60分鐘：2,000元\n• 120分鐘：4,000元";
+      }
+      alert(successMsg);
       liff.closeWindow();
     }).catch((err) => {
       alert("發送失敗，請重試或直接私訊小編。\n錯誤訊息：" + err.message);
     });
   });
 </script>
-
-</body>
-</html>
