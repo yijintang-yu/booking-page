@@ -194,10 +194,44 @@
       </div>
     </div>
 
-    <!-- 八、留言備註 (選填) -->
+   <!-- 整復前安心確認專區 -->
+    <div class="section-title">♦️整復前安心確認♦️ <strong>（初次預約者填寫）</div>
+    <div style="font-size: 0.88em; color: #666; margin-bottom: 12px; line-height: 1.5;">
+      為了提供您舒適且安心的體驗，請簡單回覆以下問題👇👇
+    </div>
+
+    <!-- 八、先前經驗 -->
     <div class="form-group">
-      <label for="note">八、留言備註（選填）</label>
-      <textarea id="note" name="note" rows="3" placeholder="如有身體特殊狀況或額外需求請在此備註"></textarea>
+      <label for="experience">八、先前是否有推拿整復或按摩的經驗？</label>
+      <select id="experience" name="experience">
+        <option value="" disabled selected>請選擇</option>
+        <option value="是">是</option>
+        <option value="否">否</option>
+      </select>
+    </div>
+
+    <!-- 十、特殊狀況（帶有打勾方塊與手術部位補充提示） -->
+    <div class="form-group">
+      <label>十、若有需避開的部位或特殊狀況，請勾選或告知我們：</label>
+      <div class="checkbox-grid">
+        <label><input type="checkbox" name="condition" value="懷孕"> 懷孕</label>
+        <label><input type="checkbox" name="condition" value="曾動過手術（請在備註補充手術部位）"> 曾動過手術（請在備註補充手術部位）</label>
+        <label><input type="checkbox" name="condition" value="皮膚較敏感"> 皮膚較敏感</label>
+        <label><input type="checkbox" name="condition" value="無特殊狀況"> 無特殊狀況</label>
+      </div>
+      <input type="text" id="otherCondition" placeholder="其他特殊狀況或避開部位（選填）" style="margin-top: 8px;">
+    </div>
+
+    <!-- 貼心提醒說明區 -->
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 0.88em; color: #4a5568; margin-bottom: 18px; line-height: 1.6;">
+      💡 <strong>貼心提醒：</strong><br>
+      我們的老師皆具備專業手法，過程中若有力道調整需求，或對特定動作感到不安，請務必隨時告知老師，我們會立即為您調整。感謝😊
+    </div>
+
+    <!-- 十一、留言備註 -->
+    <div class="form-group">
+      <label for="note">十一、留言備註</label>
+      <textarea id="note" name="note" rows="3" placeholder="若有額外需求或手術部位請在此留言"></textarea>
     </div>
 
     <button type="submit" class="submit-btn">確認送出預約</button>
@@ -231,20 +265,34 @@
     const teacher = document.getElementById('teacher').value;
     const source = document.getElementById('source').value;
     const isSelf = document.querySelector('input[name="isSelf"]:checked').value;
-    const note = document.getElementById('note').value;
+    const experience = document.getElementById('experience').value || '未填寫';
+    
+    // 收集勾選的特殊狀況
+    const checkedConditions = Array.from(document.querySelectorAll('input[name="condition"]:checked'))
+                                   .map(el => el.value);
+    const otherCondition = document.getElementById('otherCondition').value.trim();
+    
+    let finalCondition = checkedConditions.length > 0 ? checkedConditions.join('、') : '無';
+    if (otherCondition) {
+      finalCondition += `（補充：${otherCondition}）`;
+    }
+
+    const note = document.getElementById('note').value || '無';
 
     // 組合訊息
-    const messageText = `✅線上預約申請已送出✅
-1、中文全名：${name}
-2、聯絡電話：${phone}
-3、預約日期：${date} ${time}
-4、預約方案：${duration}
-5、指定師父：${teacher}
-6、得知管道：${source}
-7、是否本人：${isSelf}
-8、留言備註：${note || '無'}`;
+    const messageText = `【線上預約申請】
+一、中文全名：${name}
+二、聯絡電話：${phone}
+三、預約日期：${date} ${time}
+四、預約方案：${duration}
+五、指定師父：${teacher}
+六、得知管道：${source}
+七、是否本人：${isSelf}
+八、先前經驗：${experience}
+九、特殊狀況：${finalCondition}
+十、留言備註：${note}`;
 
-      // 發送訊息至 LINE
+    // 發送訊息至 LINE
     liff.sendMessages([
       {
         type: 'text',
@@ -262,3 +310,6 @@
     });
   });
 </script>
+
+</body>
+</html>
