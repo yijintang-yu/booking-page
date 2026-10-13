@@ -280,17 +280,17 @@
     const note = document.getElementById('note').value || '無';
 
     // 組合訊息
-    const messageText = `【線上預約申請】
-一、中文全名：${name}
-二、聯絡電話：${phone}
-三、預約日期：${date} ${time}
-四、預約方案：${duration}
-五、指定師父：${teacher}
-六、得知管道：${source}
-七、是否本人：${isSelf}
-八、先前經驗：${experience}
-九、特殊狀況：${finalCondition}
-十、留言備註：${note}`;
+    const messageText = `✅線上預約申請已送出✅
+1、中文全名：${name}
+2、聯絡電話：${phone}
+3、預約日期：${date} ${time}
+4、預約方案：${duration}
+5、指定師父：${teacher}
+6、得知管道：${source}
+7、是否本人：${isSelf}
+8、先前經驗：${experience}
+9、特殊狀況：${finalCondition}
+10、留言備註：${note}`;
 
     // 發送訊息至 LINE
     liff.sendMessages([
