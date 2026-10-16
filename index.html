@@ -72,7 +72,6 @@ footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
 <div>✅ <strong>10/17：</strong>14：00、16：00、19：00、20：00</div>
 <div>✅ <strong>10/18：</strong>10：00、11：00、14：00、16：00、18：00、19：00、20：00</div>
 <div>✅ <strong>10/19：</strong>11：00、14：00、15：00、16：00</div>
-
 </div>
 <hr>
 <div class="t">
@@ -85,7 +84,7 @@ footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
 
 <section class="card"><h2>一、選擇方案與老師</h2><div class="row two" id="plan"></div>
 <div class="sub">指定老師</div><div class="chips" id="tch"></div>
-<div class="warn">游老師班表不定，若要指定游老師者請直接<a href="https://lin.ee/XXKdY86">聯繫小編。</a>。</div></section>
+<div class="warn">游老師班表不定，若要指定游老師者請直接<a href="https://lin.ee/XXKdY86">聯繫小編</a>。</div></section>
 
 <section class="card"><h2>二、選擇日期與時段</h2>
 <div class="nav"><button type="button" id="pv" data-a="nav" data-v="-1">‹</button><b id="mt"></b><button type="button" id="nx" data-a="nav" data-v="1">›</button></div>
@@ -119,7 +118,7 @@ const PL={60:'60分鐘',120:'120分鐘'};
 const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
 const S={p:60,t:'any',y:today.getFullYear(),m:today.getMonth(),date:null,slot:null,self:'是',src:'網路',exp:'',av:[]};
 // 各老師班表：回傳 [開始,結束) 小時；休假回傳 null（日曆上不顯示任何字，只是不能點）
-const sh=(t,d)=>({'田老師':[2,4].includes(d)?null:[10,21],'張老師':d===0?null:[18,21],'李老師':{1:[10,16],3:[10,16],2:[14,17],4:[14,17]}[d]||null}[t]);
+const sh=(t,d)=>({'田老師':[1,3].includes(d)?null:[10,21],'張老師':d===0?null:[18,21],'李老師':{1:[10,16],3:[10,16],2:[14,17],4:[14,17]}[d]||null}[t]);
 function free(t,dt){const d=dt.getDay(),L=t==='any'?T:[t];let hs=false,out=[];
 H.forEach(h=>{let ok=false;L.forEach(x=>{const s=sh(x,d);if(s){hs=true;if(h>=s[0]&&h<s[1])ok=true}});if(ok)out.push(h)});return{hs,out}}
 const chip=(a,v,l,on)=>`<button type="button" class="chip${on?' on':''}" data-a="${a}" data-v="${v}">${l}</button>`;
@@ -140,7 +139,7 @@ $('slots').innerHTML=fs.map(x=>chip('s',x,x+':00',S.slot===x)).join('');
 $('self').innerHTML=['是','否'].map(x=>chip('self',x,x,S.self===x)).join('');
 $('src').innerHTML=['網路','親友介紹','路過','住附近'].map(x=>chip('src',x,x,S.src===x)).join('');
 $('exp').innerHTML=['是','否'].map(x=>chip('exp',x,x,S.exp===x)).join('');
-$('av').innerHTML=['懷孕','曾動過手術<div>（請在備註補充手術部位）','皮膚較敏感','無特殊狀況'].map(x=>chip('av',x,x,S.av.includes(x))).join('')}
+$('av').innerHTML=['懷孕','曾動過手術（請在備註補充手術部位）','皮膚較敏感','無特殊狀況'].map(x=>chip('av',x,x,S.av.includes(x))).join('')}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,v=b.dataset.v;
 if(a==='p')S.p=+v;
 else if(a==='t'){S.t=v;S.slot=null;if(S.date&&!free(S.t,S.date).out.length)S.date=null}
