@@ -1,315 +1,189 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>易筋堂線上預約</title>
-  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    }
-    body {
-      background-color: #f4f6f8;
-      margin: 0;
-      padding: 12px;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      background-color: #ffffff;
-      width: 100%;
-      max-width: 500px;
-      padding: 18px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-top: 5px;
-      margin-bottom: 18px;
-    }
-    /* 質感暖黃風樣式 */
-    .notice-box {
-      background-color: #fff9e6;
-      border-left: 4px solid #ffb800;
-      padding: 12px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      font-size: 0.9em;
-      color: #5c4300;
-      line-height: 1.6;
-      word-wrap: break-word;
-    }
-    .form-group {
-      margin-bottom: 18px;
-    }
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 6px;
-      color: #444;
-    }
-    input[type="text"],
-    input[type="tel"],
-    input[type="date"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-      background-color: #fff;
-    }
-    textarea {
-      resize: vertical;
-    }
-    .radio-group {
-      margin-top: 8px;
-    }
-    .radio-group label {
-      display: inline-block;
-      margin-right: 18px;
-      font-weight: normal;
-      cursor: pointer;
-    }
-    .submit-btn {
-      width: 100%;
-      background-color: #06c755;
-      color: white;
-      border: none;
-      padding: 14px;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background-color 0.2s;
-    }
-    .submit-btn:hover {
-      background-color: #05b34c;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>易筋堂線上預約</title>
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+:root{--bg:#F5EDE0;--card:#FBF6EE;--ink:#5C3D1E;--mut:#8A7560;--red:#9B1B1B;--gold:#8B6914;--line:#C9A96E;--bd:#E4D4B4;--hl:#F4E3BF;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f1712;--card:#2b2019;--ink:#f1e4d0;--mut:#b9a58d;--red:#b3261e;--gold:#d4b06a;--line:#6b5430;--bd:#4a3a2a;--hl:#3a2b20;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1f1712;--card:#2b2019;--ink:#f1e4d0;--mut:#b9a58d;--red:#b3261e;--gold:#d4b06a;--line:#6b5430;--bd:#4a3a2a;--hl:#3a2b20;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.6;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+header{text-align:center;padding:34px 16px 0}
+header h1{margin:0 -.3em 0 0;font-family:"Noto Serif TC","Songti TC","PMingLiU",serif;font-weight:900;font-size:42px;line-height:1.2;letter-spacing:.3em;color:var(--red)}
+header p{margin:12px 0 0;font-size:15px;color:var(--mut);letter-spacing:.2em}
+.orn{display:flex;align-items:center;gap:12px;margin:22px 0 0}
+.orn i{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none}
+.orn s{flex:1;height:1.5px;background:var(--line)}
+main{max-width:560px;margin:0 auto;padding:6px 14px 40px}
+.card{background:var(--card);border:1.5px solid var(--bd);border-radius:24px;padding:20px 18px;margin:20px 0}
+h2{margin:0 0 16px;font-family:"Noto Serif TC","Songti TC","PMingLiU",serif;font-weight:900;font-size:19px;color:var(--red)}
+h2:before{content:"◆";color:var(--line);margin-right:10px;font-size:17px}
+.news{background:var(--hl);border-left:5px solid var(--line);border-radius:8px 24px 24px 8px;padding:18px;margin:20px 0}
+.news h3{margin:0 0 10px;font-size:17px}
+.news .l{line-height:1.9;font-size:15px}
+.news hr{border:0;border-top:1.5px dashed var(--line);margin:12px 0}
+.news .t{font-size:13.5px;line-height:1.8;color:var(--mut)}
+.row{display:grid;gap:10px}
+.two{grid-template-columns:1fr 1fr}
+.opt{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--bd);border-radius:20px;padding:16px 8px;text-align:center;cursor:pointer;line-height:1.4}
+.opt.on{background:var(--red);border-color:var(--red);color:#fff}
+.opt b{display:block;font-size:17px;font-weight:500}
+.opt span{display:block;font-size:15px}
+.sub{font-size:17px;font-weight:700;margin:24px 0 12px}
+.warn{background:var(--hl);border-radius:16px;padding:14px 16px;font-size:15px;line-height:1.8;margin-top:20px}
+.warn a{color:var(--red);font-weight:700;text-decoration:underline}
+.note{font-size:13px;color:var(--mut);margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1.5px solid var(--bd);border-radius:999px;padding:10px 18px;cursor:pointer}
+.chip.on{background:var(--red);border-color:var(--red);color:#fff}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.nav b{font-size:15px;letter-spacing:.1em}
+.nav button{font:inherit;font-size:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--gold);cursor:pointer}
+.nav button:disabled{opacity:.3}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.w{text-align:center;font-size:12px;color:var(--mut);padding:2px 0}
+.d{font:inherit;font-size:15px;color:var(--ink);aspect-ratio:1/1.05;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;line-height:1.15}
+.d small{font-size:10px;color:var(--mut);min-height:12px}
+.d:disabled{background:transparent;border-color:transparent;color:var(--mut);opacity:.55;cursor:default}
+.d.on{background:var(--red);border-color:var(--red);color:#fff}
+.d.on small{color:#fff}
+label.f{display:block;font-size:13px;color:var(--gold);margin:14px 0 6px;font-weight:600}
+input[type=text],input[type=tel],textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1.5px solid var(--bd);border-radius:10px;padding:10px 12px}
+textarea{min-height:84px;resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--red);outline-offset:1px}
+.tip{background:var(--hl);border-radius:12px;padding:10px 12px;font-size:13px;margin-top:14px;line-height:1.7}
+.go{width:100%;font:inherit;font-size:16px;letter-spacing:.2em;color:#fff;background:var(--red);border:0;border-radius:14px;padding:14px;cursor:pointer;margin-top:6px}
+#res{margin-top:14px;font-size:14px;color:var(--red)}
+footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
+</style>
 </head>
 <body>
+<header><h1>易筋堂</h1><p>傳統整復推拿 線上預約</p><div class="orn"><i></i><s></s><i></i></div></header>
+<main>
 
-<div class="container">
-  <h2>📅易筋堂線上預約</h2>
-
-  <!-- 最新釋出空檔公告（質感暖黃風） -->
-  <div class="notice-box">
-    <div style="font-weight: bold; font-size: 1.05em; margin-bottom: 8px; color: #5c4300;">📢最新空檔 </div>
-    <div style="line-height: 1.8;">
+<!-- 最新空檔：每次更新請直接修改這一區的文字 -->
+<div class="news">
+<h3>📢最新空檔</h3>
+<div class="l">
 <div>✅ <strong>10/14：</strong>預約已滿</div>
 <div>✅ <strong>10/15：</strong>預約已滿</div>
 <div>✅ <strong>10/16：</strong>預約已滿</div>
-<div>✅ <strong>10/17：</strong>14：00、16：00、19：00、20：00
+<div>✅ <strong>10/17：</strong>14：00、16：00、19：00、20：00</div>
+<div>✅ <strong>10/18：</strong>20：00、11：00、14：00、16：00、18：00、19：00、20：00</div>
 </div>
-<div>✅ <strong>10/18：</strong>20：00、11：00、14：00、16：00、18：00、19：00、20：00
+<hr>
+<div class="t">
+🔸 以上為所有師父的空檔，若有指定老師請直接與小編預約<br>
+🔸 還未列出的日期或有想預約特定的時間，歡迎直接向小編詢問 😊<br>
+🔸 空檔隨時更新，若有合適的時段建議儘快約起來喔！<br><br>
+歡迎填寫線上預約單，小編收到後會儘快為您確認並安排時段！
 </div>
-    </div>
-    <hr style="border: 0; border-top: 1px dashed #f2d29b; margin: 10px 0;">
-    
-    <div style="font-size: 0.88em; line-height: 1.6; color: #7a5c10;">
-      🔸 以上為所有師父的空檔，若有指定老師請直接與小編預約<br>
-      🔸 還未列出的日期或有想預約特定的時間，歡迎直接向小編詢問 😊<br>
-      🔸 空檔隨時更新，若有合適的時段建議儘快約起來喔！<br><br>
-      歡迎填寫線上預約單，小編收到後會儘快為您確認並安排時段！
-    </div>
-  </div>
-
-  <form id="bookingForm">
-    <!-- 一、中文全名 -->
-    <div class="form-group">
-      <label for="name">一、中文全名</label>
-      <input type="text" id="name" name="name" required placeholder="請輸入中文全名">
-    </div>
-
-    <!-- 二、手機號碼 -->
-    <div class="form-group">
-      <label for="phone">二、手機號碼</label>
-      <input type="tel" id="phone" name="phone" required placeholder="請輸入手機號碼">
-    </div>
-
-    <!-- 三、預約日期與時段 -->
-    <div class="form-group">
-      <label>三、預約日期與時段</label>
-      <div style="display: flex; gap: 10px;">
-        <input type="date" id="date" name="date" required style="flex: 1;">
-        <select id="time" name="time" required style="flex: 1;">
-          <option value="" disabled selected>選擇時間</option>
-          <option value="10:00">10:00</option>
-          <option value="11:00">11:00</option>
-          <option value="14:00">14:00</option>
-          <option value="15:00">15:00</option>
-          <option value="16:00">16:00</option>
-          <option value="18:00">18:00</option>
-          <option value="19:00">19:00</option>
-          <option value="20:00">20:00</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- 四、預約方案 -->
-    <div class="form-group">
-      <label for="duration">四、預約方案</label>
-      <select id="duration" name="duration" required>
-        <option value="60分鐘 全方位放鬆整復">60分鐘 全方位放鬆整復</option>
-        <option value="120分鐘 全方位放鬆整復">120分鐘 全方位放鬆整復</option>
-      </select>
-    </div>
-
-    <!-- 五、指定老師 -->
-    <div class="form-group">
-      <label for="teacher">五、指定老師</label>
-      <select id="teacher" name="teacher" required>
-        <option value="不指定">不指定</option>
-        <option value="田老師">田老師</option>
-        <option value="張老師">張老師</option>
-        <option value="李老師">李老師</option>
-        <option value="游老師">游老師</option>
-      </select>
-    </div>
-
-    <!-- 六、如何得知本店？ -->
-    <div class="form-group">
-      <label for="source">六、如何得知本店？</label>
-      <select id="source" name="source" required>
-        <option value="網路">網路</option>
-        <option value="親友介紹">親友介紹</option>
-        <option value="路過">路過</option>
-        <option value="住附近">住附近</option>
-      </select>
-    </div>
-
-    <!-- 七、是否為本人預約 -->
-    <div class="form-group">
-      <label>七、是否為本人預約</label>
-      <div class="radio-group">
-        <label><input type="radio" name="isSelf" value="是" checked> 是</label>
-        <label><input type="radio" name="isSelf" value="否"> 否</label>
-      </div>
-    </div>
-
-   <!-- 整復前安心確認專區 -->
-    <div class="section-title">♦️整復前安心確認♦️ <strong>（初次預約者填寫）</div>
-    <div style="font-size: 0.88em; color: #666; margin-bottom: 12px; line-height: 1.5;">
-      為了提供您舒適且安心的體驗，請簡單回覆以下問題👇👇
-    </div>
-
-    <!-- 八、先前經驗 -->
-    <div class="form-group">
-      <label for="experience">八、先前是否有推拿整復或按摩的經驗？</label>
-      <select id="experience" name="experience">
-        <option value="" disabled selected>請選擇</option>
-        <option value="是">是</option>
-        <option value="否">否</option>
-      </select>
-    </div>
-
-    <!-- 十、特殊狀況（帶有打勾方塊與手術部位補充提示） -->
-    <div class="form-group">
-      <label>十、若有需避開的部位或特殊狀況，請勾選或告知我們：</label>
-      <div class="checkbox-grid">
-        <label><input type="checkbox" name="condition" value="懷孕"> 懷孕</label>
-        <label><input type="checkbox" name="condition" value="曾動過手術（請在備註補充手術部位）"> 曾動過手術（請在備註補充手術部位）</label>
-        <label><input type="checkbox" name="condition" value="皮膚較敏感"> 皮膚較敏感</label>
-        <label><input type="checkbox" name="condition" value="無特殊狀況"> 無特殊狀況</label>
-      </div>
-      <input type="text" id="otherCondition" placeholder="其他特殊狀況或避開部位（選填）" style="margin-top: 8px;">
-    </div>
-
-    <!-- 貼心提醒說明區 -->
-    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 0.88em; color: #4a5568; margin-bottom: 18px; line-height: 1.6;">
-      💡 <strong>貼心提醒：</strong><br>
-      我們的老師皆具備專業手法，過程中若有力道調整需求，或對特定動作感到不安，請務必隨時告知老師，我們會立即為您調整。感謝😊
-    </div>
-
-    <!-- 十一、留言備註 -->
-    <div class="form-group">
-      <label for="note">十一、留言備註</label>
-      <textarea id="note" name="note" rows="3" placeholder="若有額外需求或手術部位請在此留言"></textarea>
-    </div>
-
-    <button type="submit" class="submit-btn">確認送出預約</button>
-  </form>
 </div>
 
+<section class="card"><h2>一、選擇方案與老師</h2><div class="row two" id="plan"></div>
+<div class="sub">指定老師</div><div class="chips" id="tch"></div>
+<div class="warn">游老師班表不定，若要指定游老師者請直接<a href="https://lin.ee/XXKdY86">聯繫小編，謝謝。</a>。</div></section>
+
+<section class="card"><h2>二、選擇日期與時段</h2>
+<div class="nav"><button type="button" id="pv" data-a="nav" data-v="-1">‹</button><b id="mt"></b><button type="button" id="nx" data-a="nav" data-v="1">›</button></div>
+<div class="grid" id="cal"></div>
+<label class="f" id="sl" style="display:none">選擇時間</label><div class="chips" id="slots"></div></section>
+
+<section class="card"><h2>三、基本資料</h2>
+<label class="f" for="nm">中文全名</label><input type="text" id="nm" autocomplete="name" placeholder="請輸入中文全名">
+<label class="f" for="ph">手機號碼</label><input type="tel" id="ph" autocomplete="tel" inputmode="tel" placeholder="請輸入手機號碼">
+<label class="f">是否為本人預約</label><div class="chips" id="self"></div>
+<label class="f">如何得知本店？</label><div class="chips" id="src"></div></section>
+
+<section class="card"><h2>四、整復前安心確認</h2><p class="note">初次預約者填寫</p>
+<label class="f">先前是否有推拿整復或按摩的經驗？</label><div class="chips" id="exp"></div>
+<label class="f">若有需避開的部位或特殊狀況，請勾選或告知我們：</label><div class="chips" id="av"></div>
+<input type="text" id="oc" placeholder="其他特殊狀況或避開部位（選填）" style="margin-top:10px">
+<div class="tip">💡 <b>貼心提醒：</b><br>我們的老師皆具備專業手法，過程中若有力道調整需求，或對特定動作感到不安，請務必隨時告知老師，我們會立即為您調整。感謝😊</div>
+<label class="f" for="mm">留言備註</label><textarea id="mm" placeholder="若有額外需求或手術部位請在此留言"></textarea></section>
+
+<button type="button" class="go" id="go">確認送出預約</button>
+<div id="res"></div>
+<footer>新北市永和區信義路88號 · 頂溪捷運站步行 5 分鐘</footer>
+</main>
 <script>
-  // 初始化 LIFF
-  liff.init({ liffId: "2011937745-QNZCNd9t" }).then(() => {
-    console.log("LIFF Initialized");
-  }).catch((err) => {
-    console.error("LIFF Initialization failed", err);
-  });
+// 初始化 LIFF
+if(window.liff){liff.init({liffId:"2011937745-QNZCNd9t"}).then(()=>console.log("LIFF Initialized")).catch(e=>console.error("LIFF Initialization failed",e))}
 
-  // 表單送出處理
-  document.getElementById('bookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+const $=i=>document.getElementById(i);
+const H=[10,11,14,15,16,18,19,20],T=['田老師','張老師','李老師'];
+const PL={60:'60分鐘',120:'120分鐘'};
+const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+const S={p:60,t:'any',y:today.getFullYear(),m:today.getMonth(),date:null,slot:null,self:'是',src:'網路',exp:'',av:[]};
+// 各老師班表：回傳 [開始,結束) 小時；休假回傳 null（日曆上不顯示任何字，只是不能點）
+const sh=(t,d)=>({'田老師':[2,4].includes(d)?null:[10,21],'張老師':d===0?null:[18,21],'李老師':{1:[10,16],3:[10,16],2:[14,17],4:[14,17]}[d]||null}[t]);
+function free(t,dt){const d=dt.getDay(),L=t==='any'?T:[t];let hs=false,out=[];
+H.forEach(h=>{let ok=false;L.forEach(x=>{const s=sh(x,d);if(s){hs=true;if(h>=s[0]&&h<s[1])ok=true}});if(ok)out.push(h)});return{hs,out}}
+const chip=(a,v,l,on)=>`<button type="button" class="chip${on?' on':''}" data-a="${a}" data-v="${v}">${l}</button>`;
+function draw(){
+$('plan').innerHTML=Object.keys(PL).map(k=>`<button type="button" class="opt${S.p==k?' on':''}" data-a="p" data-v="${k}"><b>${PL[k].replace('分鐘',' 分鐘')}</b><span>全方位放鬆整復</span></button>`).join('');
+$('tch').innerHTML=chip('t','any','不指定',S.t==='any')+T.map(t=>chip('t',t,t,S.t===t)).join('');
+$('mt').textContent=S.y+' 年 '+(S.m+1)+' 月';
+$('pv').disabled=S.y===today.getFullYear()&&S.m===today.getMonth();
+$('nx').disabled=(S.y*12+S.m)-(today.getFullYear()*12+today.getMonth())>=1;
+const first=new Date(S.y,S.m,1).getDay(),days=new Date(S.y,S.m+1,0).getDate();
+let h=['日','一','二','三','四','五','六'].map(w=>`<div class="w">${w}</div>`).join('')+'<div></div>'.repeat(first);
+for(let d=1;d<=days;d++){const dt=new Date(S.y,S.m,d),past=dt<today,f=free(S.t,dt),dis=past||!f.hs,on=S.date&&+S.date===+dt;
+h+=`<button type="button" class="d${on?' on':''}" ${dis?'disabled':''} data-a="d" data-v="${d}">${d}<small></small></button>`}
+$('cal').innerHTML=h;
+const fs=S.date?free(S.t,S.date).out:[];
+$('sl').style.display=S.date?'block':'none';
+$('slots').innerHTML=fs.map(x=>chip('s',x,x+':00',S.slot===x)).join('');
+$('self').innerHTML=['是','否'].map(x=>chip('self',x,x,S.self===x)).join('');
+$('src').innerHTML=['網路','親友介紹','路過','住附近'].map(x=>chip('src',x,x,S.src===x)).join('');
+$('exp').innerHTML=['是','否'].map(x=>chip('exp',x,x,S.exp===x)).join('');
+$('av').innerHTML=['懷孕','曾動過手術（請在備註補充手術部位）','皮膚較敏感','無特殊狀況'].map(x=>chip('av',x,x,S.av.includes(x))).join('')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,v=b.dataset.v;
+if(a==='p')S.p=+v;
+else if(a==='t'){S.t=v;S.slot=null;if(S.date&&!free(S.t,S.date).out.length)S.date=null}
+else if(a==='nav'){const n=S.y*12+S.m+ +v;S.y=Math.floor(n/12);S.m=n%12}
+else if(a==='d'){S.date=new Date(S.y,S.m,+v);S.slot=null}
+else if(a==='s')S.slot=+v;
+else if(a==='av'){S.av=S.av.includes(v)?S.av.filter(x=>x!==v):S.av.concat(v)}
+else S[a]=v;
+draw()});
 
-    // 檢查是否在 LINE 環境內開啟
-    if (!liff.isInClient()) {
-      alert("請在 LINE 裡面開啟此網頁才能送出預約訊息喔！\n錯誤訊息：非 LINE 內建瀏覽器");
-      return;
-    }
-
-    // 取得欄位數值
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('time').value;
-    const duration = document.getElementById('duration').value;
-    const teacher = document.getElementById('teacher').value;
-    const source = document.getElementById('source').value;
-    const isSelf = document.querySelector('input[name="isSelf"]:checked').value;
-    const experience = document.getElementById('experience').value || '未填寫';
-    
-    // 收集勾選的特殊狀況
-    const checkedConditions = Array.from(document.querySelectorAll('input[name="condition"]:checked'))
-                                   .map(el => el.value);
-    const otherCondition = document.getElementById('otherCondition').value.trim();
-    
-    let finalCondition = checkedConditions.length > 0 ? checkedConditions.join('、') : '無';
-    if (otherCondition) {
-      finalCondition += `（補充：${otherCondition}）`;
-    }
-
-    const note = document.getElementById('note').value || '無';
-
-    // 組合訊息
-    const messageText = `✅線上預約申請已送出✅
+// 表單送出處理
+$('go').onclick=()=>{
+const r=$('res'),name=$('nm').value.trim(),phone=$('ph').value.trim();
+if(!name||!phone||!S.date||S.slot===null){r.textContent='請填寫姓名、手機，並選擇日期與時段。';return}
+r.textContent='';
+if(!window.liff||!liff.isInClient()){alert("請在 LINE 裡面開啟此網頁才能送出預約訊息喔！\n錯誤訊息：非 LINE 內建瀏覽器");return}
+const p2=n=>String(n).padStart(2,'0');
+const date=S.date.getFullYear()+'-'+p2(S.date.getMonth()+1)+'-'+p2(S.date.getDate());
+const time=p2(S.slot)+':00';
+const duration=PL[S.p]+' 全方位放鬆整復';
+const teacher=S.t==='any'?'不指定':S.t;
+const oc=$('oc').value.trim();
+let cond=S.av.length?S.av.join('、'):'無';
+if(oc)cond+=`（補充：${oc}）`;
+const note=$('mm').value.trim()||'無';
+const messageText=`✅線上預約申請已送出✅
 1、中文全名：${name}
 2、聯絡電話：${phone}
 3、預約日期：${date} ${time}
 4、預約方案：${duration}
 5、指定師父：${teacher}
-6、得知管道：${source}
-7、是否本人：${isSelf}
-8、先前經驗：${experience}
-9、特殊狀況：${finalCondition}
+6、得知管道：${S.src}
+7、是否本人：${S.self}
+8、先前經驗：${S.exp||'未填寫'}
+9、特殊狀況：${cond}
 10、留言備註：${note}`;
-
-    // 發送訊息至 LINE
-    liff.sendMessages([
-      {
-        type: 'text',
-        text: messageText
-      }
-    ]).then(() => {
-      let successMsg = "小編收到預約申請後會盡快回覆喔！謝謝 😊";
-      if (isSelf === "否") {
-        successMsg += "\n\n⚠️ 貼心提醒：非本人預約方案恕不適用會員優惠，將以原價計費：\n• 60分鐘：2,000元\n• 120分鐘：4,000元";
-      }
-      alert(successMsg);
-      liff.closeWindow();
-    }).catch((err) => {
-      alert("發送失敗，請重試或直接私訊小編。\n錯誤訊息：" + err.message);
-    });
-  });
+liff.sendMessages([{type:'text',text:messageText}]).then(()=>{
+let msg="小編收到預約申請後會盡快回覆喔！謝謝 😊";
+if(S.self==="否"){msg+="\n\n⚠️ 貼心提醒：非本人預約方案恕不適用會員優惠，將以原價計費：\n• 60分鐘：2,000元\n• 120分鐘：4,000元"}
+alert(msg);liff.closeWindow();
+}).catch(err=>{alert("發送失敗，請重試或直接私訊小編。\n錯誤訊息："+err.message)})};
+draw();
 </script>
-
 </body>
 </html>
