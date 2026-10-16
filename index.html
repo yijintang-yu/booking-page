@@ -1,230 +1,50 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>易筋堂｜師父空檔查詢</title>
-<style>
-:root{
-  --crimson:#9B1B1B; --gold:#8B6914; --gold-light:#C9A96E;
-  --cream:#F5EDE0; --cream-light:#FBF6EE; --brown:#5C3D1E; --muted:#8A7560;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--cream);color:var(--brown);
-  font-family:"Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;line-height:1.5}
-.wrap{max-width:480px;margin:0 auto;padding:20px 14px 40px}
-h1{margin:0;text-align:center;color:var(--crimson);font-size:22px;letter-spacing:4px}
-.sub{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 14px}
-.orn{height:1px;background:var(--gold-light);margin:0 auto 16px;position:relative;width:70%}
-.orn::before,.orn::after{content:"";position:absolute;top:-3px;width:7px;height:7px;border-radius:50%;background:var(--gold-light)}
-.orn::before{left:-4px}.orn::after{right:-4px}
-.card{background:var(--cream-light);border:1px solid var(--gold-light);border-radius:16px;padding:14px;margin-bottom:14px}
-.tabs{display:flex;gap:8px}
-.tab{flex:1;padding:10px 0;border:1px solid var(--gold-light);border-radius:999px;background:transparent;
-  color:var(--brown);font:inherit;font-size:15px;cursor:pointer}
-.tab.on{background:var(--crimson);border-color:var(--crimson);color:#fff}
-.mhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.mhead b{font-size:17px;color:var(--crimson);letter-spacing:2px}
-.nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--gold-light);background:transparent;
-  color:var(--gold);font-size:18px;cursor:pointer}
-.nav:disabled{opacity:.25;cursor:default}
-.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.dow{text-align:center;font-size:12px;color:var(--muted);padding:2px 0}
-.cell{aspect-ratio:1/1.05;border-radius:10px;border:1px solid transparent;background:transparent;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
-  font:inherit;color:var(--brown);padding:0}
-.cell .n{font-size:15px}
-.cell .t{font-size:10px;line-height:1.1;min-height:11px}
-.cell.open{background:#fff;border-color:var(--gold-light);cursor:pointer}
-.cell.open .t{color:var(--crimson)}
-.cell.full{background:rgba(138,117,96,.12);cursor:pointer}
-.cell.full .t{color:var(--muted)}
-.cell.off,.cell.past{opacity:.35}
-.cell.sel{background:var(--crimson);border-color:var(--crimson);color:#fff}
-.cell.sel .t{color:#fff}
-.dayttl{font-size:15px;color:var(--crimson);margin:0 0 10px;letter-spacing:1px}
-.slots{display:flex;flex-wrap:wrap;gap:8px}
-.pill{padding:8px 14px;border-radius:999px;border:1px solid var(--gold-light);background:#fff;font-size:15px}
-.pill.full{background:rgba(138,117,96,.12);border-color:transparent;color:var(--muted);text-decoration:line-through}
-.hint{color:var(--muted);font-size:14px}
-.btn{display:block;text-align:center;text-decoration:none;background:var(--crimson);color:#fff;
-  padding:13px;border-radius:999px;font-size:16px;letter-spacing:3px;margin-top:4px}
-.note{font-size:13px;color:var(--muted);text-align:center;margin:12px 4px 0}
-.demo{background:var(--gold-light);color:var(--brown);font-size:12px;text-align:center;border-radius:8px;padding:4px;margin-bottom:10px}
-.err{color:var(--crimson);text-align:center;font-size:14px;padding:6px}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <h1>師父空檔查詢</h1>
-  <div class="sub">易筋堂傳統整復推拿</div>
-  <div class="orn"></div>
-  <div id="demo" class="demo" hidden>目前顯示為示範資料</div>
-
-  <div class="card"><div class="tabs" id="tabs"></div></div>
-
-  <div class="card">
-    <div class="mhead">
-      <button class="nav" id="prev" aria-label="上個月">‹</button>
-      <b id="mtitle"></b>
-      <button class="nav" id="next" aria-label="下個月">›</button>
-    </div>
-    <div class="grid" id="dows"></div>
-    <div class="grid" id="cal"></div>
-    <div id="err" class="err" hidden></div>
-  </div>
-
-  <div class="card" id="daycard">
-    <p class="dayttl" id="dayttl">請點選日期查看時段</p>
-    <div class="slots" id="slots"></div>
-  </div>
-
-  <a class="btn" id="book" href="https://liff.line.me/2011937745-QNZCNd9t">前往預約</a>
-  <p class="note">因游老師班表不定，若要指定預約游老師請直接聯繫小編。</p>
-</div>
-
-<script>
-/* ===== 設定 ===== */
-// 貼上 Apps Script 部署後的網頁應用程式網址（結尾 /exec）；留空則顯示示範資料
-const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTEAR3LJuWMuF2RHlzBxa9SdKiG-dAsGNqgyDCFSfvtwu-Hn-tJXJ_L4ol4iGhChMDte-axwLihaJGq4aoctBLeQYYxR6I8XpFLtIodVn0a5Q0wfVyxYvJhF3J15ntzkzjapzQJ3PZ0jsoJCCWUcYP_k6z__Pj0znfYJ3FUE9_KzpoXQ3EdnALuYAIfispFh-ti8x6_9T3uEdzcTrewqlaOSPNRuakyNammWj9PkMmDhgsls3rnGUhmPHlhy06CLaVjiecRSR0w-5lJ0M47RbXsTdgrOg&lib=MxMlv-L2MQqJ0IPbxN3Ust0p1N-RQqVqO';
-
-
-// 師父排班（0=週日 … 6=週六），已排除公休時段 12–14、17–18，最晚 20:00
-const A = [10,11,14,15,16,18,19,20];
-const TEACHERS = {
-  tian:  { name:'田老師', days:{0:A,2:A,4:A,5:A,6:A} },
-  zhang: { name:'張老師', days:{1:[18,19,20],2:[18,19,20],3:[18,19,20],4:[18,19,20],5:[18,19,20],6:[18,19,20]} },
-  li:    { name:'李老師', days:{1:[10,11,14,15,16],3:[10,11,14,15,16],2:[14,15,16],4:[14,15,16]} }
-};
-/* ================= */
-
-const DOW = ['日','一','二','三','四','五','六'];
-const pad = n => String(n).padStart(2,'0');
-const ts = (y,m,d,h) => Date.parse(`${y}-${pad(m+1)}-${pad(d)}T${pad(h)}:00:00+08:00`);
-
-// 以台北時間取得今天
-const parts = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'})
-  .format(new Date()).split('-').map(Number);
-const TY = parts[0], TM = parts[1]-1, TD = parts[2];
-
-let data = {rest:[], tian:[], zhang:[], li:[]};
-let cur = 'any', viewOff = 0, selDay = null;
-
-function monthInfo(off){
-  const d = new Date(Date.UTC(TY, TM+off, 1));
-  return {y:d.getUTCFullYear(), m:d.getUTCMonth(),
-          first:d.getUTCDay(), days:new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth()+1, 0)).getUTCDate()};
-}
-const overlap = (list,s,e) => list.some(([a,b]) => a < e && b > s);
-
-// 回傳某天的時段狀態 [{h, full}]
-function daySlots(key,y,m,d){
-  if(key==='any'){
-    const map = {};
-    for(const k of Object.keys(TEACHERS)){
-      for(const s of daySlotsOne(k,y,m,d)){
-        if(!map[s.h]) map[s.h] = {who:[]};
-        if(!s.full) map[s.h].who.push(TEACHERS[k].name.replace('老師',''));
-      }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>易筋堂線上預約</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
-    return Object.keys(map).map(Number).sort((a,b)=>a-b)
-      .map(h=>({h, full:map[h].who.length===0, who:map[h].who}));
-  }
-  return daySlotsOne(key,y,m,d);
-}
-const nameOf = k => k==='any' ? '不指定' : TEACHERS[k].name;
-function daySlotsOne(key,y,m,d){
-  const dow = new Date(Date.UTC(y,m,d)).getUTCDay();
-  const hours = TEACHERS[key].days[dow] || [];
-  const now = Date.now();
-  const out = [];
-  for(const h of hours){
-    const s = ts(y,m,d,h), e = s + 3600000;
-    if(s <= now) continue;                     // 已過的時段不顯示
-    if(overlap(data.rest,s,e)) continue;       // 公休
-    out.push({h, full: overlap(data[key],s,e)});
-  }
-  return out;
-}
-
-function render(){
-  const {y,m,first,days} = monthInfo(viewOff);
-  document.getElementById('mtitle').textContent = `${y} 年 ${m+1} 月`;
-  document.getElementById('prev').disabled = viewOff===0;
-  document.getElementById('next').disabled = viewOff===1;
-  const cal = document.getElementById('cal');
-  cal.innerHTML = '';
-  for(let i=0;i<first;i++) cal.appendChild(document.createElement('div'));
-  for(let d=1; d<=days; d++){
-    const past = (y===TY && m===TM && d<TD);
-    const slots = past ? [] : daySlots(cur,y,m,d);
-    const open = slots.filter(s=>!s.full).length;
-    const b = document.createElement('button');
-    let cls = 'cell', label = '';
-    if(past) cls += ' past';
-    else if(!slots.length) cls += ' off';
-    else if(open===0){ cls += ' full'; label = '已滿'; }
-    else { cls += ' open'; }
-    if(selDay===d) cls += ' sel';
-    b.className = cls;
-    b.innerHTML = `<span class="n">${d}</span><span class="t">${label}</span>`;
-    if(slots.length) b.onclick = () => { selDay = d; render(); };
-    cal.appendChild(b);
-  }
-  // 當日時段
-  const ttl = document.getElementById('dayttl'), box = document.getElementById('slots');
-  box.innerHTML = '';
-  if(selDay && selDay<=days){
-    const dow = new Date(Date.UTC(y,m,selDay)).getUTCDay();
-    ttl.textContent = `${nameOf(cur)}｜${m+1}/${selDay}（${DOW[dow]}）`;
-    const slots = daySlots(cur,y,m,selDay);
-    if(!slots.length) box.innerHTML = '<span class="hint">當天無可預約時段</span>';
-    else if(slots.every(s=>s.full)) box.innerHTML = '<span class="pill full">已滿</span>';
-    else slots.forEach(s=>{
-      const p = document.createElement('span');
-      p.className = 'pill' + (s.full?' full':'');
-      p.textContent = `${pad(s.h)}:00` + (s.full?' 已滿':(s.who&&s.who.length>=2?'　'+s.who.join('、'):''));
-      box.appendChild(p);
-    });
-  } else { ttl.textContent = '請點選日期查看時段'; }
-}
-
-// 初始化介面
-document.getElementById('dows').innerHTML = DOW.map(d=>`<div class="dow">${d}</div>`).join('');
-const tabs = document.getElementById('tabs');
-['any', ...Object.keys(TEACHERS)].forEach(k=>{
-  const b = document.createElement('button');
-  b.className = 'tab' + (k===cur?' on':''); b.textContent = nameOf(k);
-  b.onclick = () => { cur = k; selDay = null;
-    [...tabs.children].forEach(c=>c.classList.toggle('on', c===b)); render(); };
-  tabs.appendChild(b);
-});
-document.getElementById('prev').onclick = () => { viewOff = 0; selDay = null; render(); };
-document.getElementById('next').onclick = () => { viewOff = 1; selDay = null; render(); };
-
-// 載入資料
-function demoData(){
-  const r = {rest:[], tian:[], zhang:[], li:[]};
-  const blk = (k,d,h) => r[k].push([ts(TY,TM,d,h), ts(TY,TM,d,h)+3600000]);
-  // 示範：張老師某天 18–21 全滿
-  const d = Math.min(TD+2, 28);
-  [18,19,20].forEach(h=>blk('zhang',d,h));
-  blk('tian',d,10); blk('tian',d,11);
-  return r;
-}
-async function load(){
-  if(!API_URL){ document.getElementById('demo').hidden = false; data = demoData(); render(); return; }
-  try{
-    const res = await fetch(API_URL);
-    data = await res.json();
-  }catch(e){
-    const el = document.getElementById('err');
-    el.hidden = false; el.textContent = '空檔資料讀取失敗，請稍後再試或聯繫小編。';
-  }
-  render();
-}
-render();
-load();
-</script>
-</body>
-</html>
+    body {
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 500px;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-top: 5px;
+      margin-bottom: 18px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #444;
+    }
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid
