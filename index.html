@@ -146,7 +146,6 @@ draw()});
 
 // 預約通知後台網址（Google Apps Script 部署後的 /exec 網址，貼在引號內；留空則只發送聊天訊息）
 const BACKEND='https://script.google.com/macros/s/AKfycbxiscXRC27891MpDDq9k3Ie8sxEVIJZxWDCjlY3hooWK1PuvHs1-1dErBZnuhkUaSNn/exec';
-async function getUid(){try{return (await liff.getProfile()).userId}catch(e){}try{return liff.getContext().userId||''}catch(e){}return ''}
 
 // 表單送出處理
 $('go').onclick=async()=>{
@@ -164,6 +163,7 @@ const oc=$('oc').value.trim();
 let cond=S.av.length?S.av.join('、'):'無';
 if(oc)cond+=`（補充：${oc}）`;
 const note=$('mm').value.trim()||'無';
+const code=Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x%32]).join('');
 const messageText=`✅線上預約申請已送出✅
 1、中文全名：${name}
 2、聯絡電話：${phone}
@@ -174,12 +174,13 @@ const messageText=`✅線上預約申請已送出✅
 7、是否本人：${S.self}
 8、先前經驗：${S.exp||'未填寫'}
 9、特殊狀況：${cond}
-10、留言備註：${note}`;
+10、留言備註：${note}
+預約編號：${code}`;
 const btn=$('go');btn.disabled=true;btn.textContent='送出中…';
 try{
 await liff.sendMessages([{type:'text',text:messageText}]);
 if(BACKEND){
-const payload={type:'booking',name,phone,date,time,plan:duration,teacher,source:S.src,self:S.self,exp:S.exp||'未填寫',cond,note,userId:await getUid()};
+const payload={type:'booking',name,phone,date,time,plan:duration,teacher,source:S.src,self:S.self,exp:S.exp||'未填寫',cond,note,code};
 try{await Promise.race([fetch(BACKEND,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}),new Promise(res=>setTimeout(res,8000))])}catch(e){console.error(e)}
 }
 let msg="小編收到預約申請後會盡快回覆喔！謝謝 😊";
