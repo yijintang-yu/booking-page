@@ -20,20 +20,22 @@ header p{margin:12px 0 0;font-size:15px;color:var(--mut);letter-spacing:.2em}
 .orn s{flex:1;height:1.5px;background:var(--line)}
 main{max-width:560px;margin:0 auto;padding:6px 14px 40px}
 .card{background:var(--card);border:1.5px solid var(--bd);border-radius:24px;padding:20px 18px;margin:20px 0}
-h2{margin:0 0 16px;font-family:"Noto Serif TC","Songti TC","PMingLiU",serif;font-weight:900;font-size:19px;color:var(--red)}
+h2{margin:0 0 16px;font-family:"Noto Serif TC","Songti TC","PMingLiU",serif;font-weight:900;font-size:17px;color:var(--red)}
 .row{display:grid;gap:10px}
 .two{grid-template-columns:1fr 1fr}
-.opt{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--bd);border-radius:20px;padding:16px 8px;text-align:center;cursor:pointer;line-height:1.4}
+.opt{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--bd);border-radius:18px;padding:12px 6px;text-align:center;cursor:pointer;line-height:1.4}
 .opt.on{background:var(--red);border-color:var(--red);color:#fff}
-.opt b{display:block;font-size:17px;font-weight:500}
-.opt span{display:block;font-size:15px}
-.sub{font-size:17px;font-weight:700;margin:24px 0 12px}
+.opt b{display:block;font-size:15px;font-weight:500}
+.opt span{display:block;font-size:13px}
+.sub{font-size:15px;font-weight:700;margin:20px 0 10px}
 .warn{background:var(--hl);border-radius:16px;padding:14px 16px;font-size:15px;line-height:1.8;margin-top:20px}
 .warn a{color:var(--red);font-weight:700;text-decoration:underline}
 .note{font-size:13px;color:var(--mut);margin:0}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1.5px solid var(--bd);border-radius:999px;padding:10px 18px;cursor:pointer}
+.chip{font:inherit;font-size:14px;color:var(--ink);background:var(--card);border:1.5px solid var(--bd);border-radius:999px;padding:10px 18px;cursor:pointer}
 .chip.on{background:var(--red);border-color:var(--red);color:#fff}
+#tch{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+#tch .chip{padding:9px 4px;text-align:center}
 .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .nav b{font-size:15px;letter-spacing:.1em}
 .nav button{font:inherit;font-size:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--gold);cursor:pointer}
@@ -54,10 +56,10 @@ input:focus,textarea:focus{outline:2px solid var(--red);outline-offset:1px}
 #res{margin-top:14px;font-size:14px;color:var(--red)}
 .tinfo{border:1.5px solid var(--bd);border-radius:20px;padding:18px 16px;margin-top:16px;text-align:center}
 .tinfo img{width:120px;height:120px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 10px}
-.tinfo h3{margin:0 0 10px;font-family:"Noto Serif TC","Songti TC","PMingLiU",serif;font-size:19px}
-.tg{display:inline-block;font-size:13px;border-radius:999px;padding:5px 14px;margin:3px 2px;background:var(--hl);color:var(--gold);border:1px solid var(--line)}
+.tinfo h3{margin:0 0 10px;font-family:"Noto Serif TC","Songti TC","PMingLiU",serif;font-size:17px}
+.tg{display:inline-block;font-size:12px;border-radius:999px;padding:5px 14px;margin:3px 2px;background:var(--hl);color:var(--gold);border:1px solid var(--line)}
 .tg.m{background:var(--red);border-color:var(--red);color:#fff}
-.tinfo p{margin:12px 0 0;font-size:14px;line-height:1.8;text-align:left}
+.tinfo p{margin:12px 0 0;font-size:13px;line-height:1.8;text-align:left}
 .tinfo .red{color:var(--red);font-weight:700;margin-top:14px}
 .tinfo .red a{color:var(--red);text-decoration:underline}
 footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
@@ -81,7 +83,7 @@ footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
 <label class="f">是否為本人預約</label><div class="chips" id="self"></div>
 <label class="f">如何得知本店？</label><div class="chips" id="src"></div></section>
 
-<section class="card"><h2>四、整復前安心確認</h2><p class="note" style="font-family:'Noto Serif TC','Songti TC','PMingLiU',serif;font-weight:900;font-size:19px;color:var(--red)">初次預約者填寫</p>
+<section class="card"><h2>四、整復前安心確認</h2><p class="note" style="font-family:'Noto Serif TC','Songti TC','PMingLiU',serif;font-weight:900;font-size:17px;color:var(--red)">初次預約者請務必填寫</p>
 <label class="f">先前是否有推拿整復或按摩的經驗？</label><div class="chips" id="exp"></div>
 <label class="f">若有需避開的部位或特殊狀況，請勾選或告知我們：</label><div class="chips" id="av"></div>
 <input type="text" id="oc" placeholder="其他特殊狀況或避開部位（選填）" style="margin-top:10px">
