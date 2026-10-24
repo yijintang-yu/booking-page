@@ -118,7 +118,8 @@ footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
 </main>
 <script>
 // 初始化 LIFF
-const LIFF_READY=window.liff?liff.init({liffId:"2011937745-QNZCNd9t"}).then(()=>{console.log("LIFF Initialized");return true}).catch(e=>{console.error("LIFF Initialization failed",e);return false}):Promise.resolve(false);
+let LIFF_ERR=window.liff?"啟動中":"LIFF 程式沒有載入";
+const LIFF_READY=window.liff?liff.init({liffId:"2011937745-QNZCNd9t"}).then(()=>{console.log("LIFF Initialized");LIFF_ERR="";return true}).catch(e=>{console.error("LIFF Initialization failed",e);LIFF_ERR=(e&&(e.code||e.message))||"啟動失敗";return false}):Promise.resolve(false);
 
 const $=i=>document.getElementById(i);
 const H=[10,11,14,15,16,18,19,20],T=['田老師','張老師','李老師'];
@@ -228,7 +229,7 @@ LS.set('yjt_phone',phone);
 await Promise.all([loadBusy(),askLevel(phone).catch(e=>console.error(e))]);btn0.disabled=false;btn0.textContent='確認送出預約';
 if(LVX){showBlock();return}
 if(!free(S.t,S.date).out.includes(S.slot)){S.slot=null;draw();r.textContent='抱歉，這個時段剛剛被預約了，請重新選擇時段。';return}
-if(!window.liff||!liff.isInClient()){alert("請在 LINE 裡面開啟此網頁才能送出預約訊息喔！\n錯誤訊息：非 LINE 內建瀏覽器");return}
+if(!window.liff||!liff.isInClient()){alert("請在 LINE 裡面開啟此網頁才能送出預約訊息喔！\n錯誤訊息：非 LINE 內建瀏覽器\n\n（檢查用）\nLIFF："+(LIFF_ERR||"已啟動")+"\n在LINE裡："+(window.liff&&liff.isInClient?String(liff.isInClient()):"無法判斷")+"\n網址："+location.href.slice(0,120));return}
 const p2=n=>String(n).padStart(2,'0');
 const date=S.date.getFullYear()+'-'+p2(S.date.getMonth()+1)+'-'+p2(S.date.getDate());
 const time=p2(S.slot)+':00';
