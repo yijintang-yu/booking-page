@@ -115,7 +115,8 @@ const S={p:60,t:'any',y:today.getFullYear(),m:today.getMonth(),date:null,slot:nu
 // 各老師班表：回傳 [開始,結束) 小時；休假回傳 null（日曆上不顯示任何字，只是不能點）
 const sh=(t,d)=>({'田老師':[1,3].includes(d)?null:[10,21],'張老師':d===0?null:[18,21],'李老師':{1:[10,17],3:[10,17],2:[14,17],4:[14,17]}[d]||null}[t]);
 function free(t,dt){const d=dt.getDay(),L=t==='any'?T:[t];let hs=false,out=[];
-H.forEach(h=>{let ok=false;L.forEach(x=>{const s=sh(x,d);if(s){hs=true;if(h>=s[0]&&h<s[1])ok=true}});if(ok)out.push(h)});return{hs,out}}
+const n=S.p/60;   // 120 分鐘需要同一位老師連續兩個時段
+H.forEach(h=>{let ok=false;L.forEach(x=>{const s=sh(x,d);if(s){hs=true;let g=true;for(let i=0;i<n;i++){const k=h+i;if(!H.includes(k)||k<s[0]||k>=s[1])g=false}if(g)ok=true}});if(ok)out.push(h)});return{hs,out}}
 const chip=(a,v,l,on)=>`<button type="button" class="chip${on?' on':''}" data-a="${a}" data-v="${v}">${l}</button>`;
 function draw(){
 $('plan').innerHTML=Object.keys(PL).map(k=>`<button type="button" class="opt${S.p==k?' on':''}" data-a="p" data-v="${k}"><b>${PL[k].replace('分鐘',' 分鐘')}</b><span>${PN[k]}</span></button>`).join('');
@@ -138,7 +139,7 @@ $('src').innerHTML=['網路','親友介紹','路過','住附近'].map(x=>chip('s
 $('exp').innerHTML=['是','否'].map(x=>chip('exp',x,x,S.exp===x)).join('');
 $('av').innerHTML=['懷孕','曾動過手術（請在備註補充手術部位）','皮膚較敏感','無特殊狀況'].map(x=>chip('av',x,x,S.av.includes(x))).join('')}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,v=b.dataset.v;
-if(a==='p')S.p=+v;
+if(a==='p'){S.p=+v;if(S.date&&!free(S.t,S.date).out.includes(S.slot))S.slot=null}
 else if(a==='t'){S.t=v;S.slot=null;if(S.date&&!free(S.t,S.date).out.length)S.date=null}
 else if(a==='nav'){const n=S.y*12+S.m+ +v;S.y=Math.floor(n/12);S.m=n%12}
 else if(a==='d'){S.date=new Date(S.y,S.m,+v);S.slot=null}
