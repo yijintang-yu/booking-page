@@ -229,4 +229,64 @@ const r=$('res'),name=$('nm').value.trim(),phone=$('ph').value.trim();
 if(S.t==='游老師'){r.textContent='游老師班表不定，若要指定游老師者請直接聯繫小編。';return}
 if(!name||!phone||!S.date||S.slot===null){r.textContent='請填寫姓名、手機，並選擇日期與時段。';return}
 r.textContent='';
-if(LVX){
+if(LVX){showBlock();return}
+const btn0=$('go');btn0.disabled=true;btn0.textContent='確認空檔中…';
+LS.set('yjt_phone',phone);
+await Promise.all([loadBusy(),askLevel(phone).catch(e=>console.error(e))]);btn0.disabled=false;btn0.textContent='確認送出預約';
+if(LVX){showBlock();return}
+if(!free(S.t,S.date).out.includes(S.slot)){S.slot=null;draw();r.textContent='抱歉，這個時段剛剛被預約了，請重新選擇時段。';return}
+if(!window.liff||!liff.isInClient()){alert("請在 LINE 裡面開啟此網頁才能送出預約訊息喔！\n錯誤訊息：非 LINE 內建瀏覽器\n\n（檢查用）\nLIFF："+(LIFF_ERR||"已啟動")+"\n在LINE裡："+(window.liff&&liff.isInClient?String(liff.isInClient()):"無法判斷")+"\n網址："+location.href.slice(0,120));return}
+const p2=n=>String(n).padStart(2,'0');
+const date=S.date.getFullYear()+'-'+p2(S.date.getMonth()+1)+'-'+p2(S.date.getDate());
+const time=p2(S.slot)+':00';
+const duration=PL[S.p]+' '+PN[S.p];
+const teacher=S.t==='any'?'不指定':S.t;
+const oc=$('oc').value.trim();
+let cond=S.av.length?S.av.join('、'):'無';
+if(oc)cond+=`（補充：${oc}）`;
+const note=$('mm').value.trim()||'無';
+checkReturning();
+const srcTxt=RT?'沿用上次':S.src,expTxt=RT?'沿用上次':(S.exp||'未填寫');
+if(RT)cond='沿用上次';
+const code=Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x%32]).join('');
+const messageText=`✅預約表單已送出✅
+送出後需由小編確認，才算預約成功。
+
+1、中文全名：${name}
+2、聯絡電話：${phone}
+3、預約日期：${date} ${time}
+4、預約方案：${duration}
+5、指定師父：${teacher}
+6、得知管道：${srcTxt}
+7、是否本人：${S.self}
+8、先前經驗：${expTxt}
+9、特殊狀況：${cond}
+10、留言備註：${note}
+預約編號：${code}`;
+const btn=$('go');btn.disabled=true;btn.textContent='送出中…';
+try{
+await liff.sendMessages([{type:'text',text:messageText}]);
+LS.set('yjt_name',name);LS.set('yjt_phone',phone);LS.set('yjt_done',name+'|'+normP(phone));
+if(BACKEND){
+const payload={type:'booking',liffId:UID,name,phone,date,time,plan:duration,teacher,source:srcTxt,self:S.self,exp:expTxt,cond,note,code};
+try{await Promise.race([fetch(BACKEND,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}),new Promise(res=>setTimeout(res,8000))])}catch(e){console.error(e)}
+}
+let msg="小編收到預約申請後會盡快回覆喔！謝謝 😊";
+if(S.self==="否"){msg+="\n\n⚠️ 貼心提醒：非本人預約方案恕不適用會員優惠，將以原價計費：\n• 60分鐘：2,000元\n• 120分鐘：4,000元"}
+alert(msg);liff.closeWindow();
+}catch(err){alert("發送失敗，請重試或直接私訊小編。\n錯誤訊息："+err.message);btn.disabled=false;btn.textContent='確認送出預約'}};
+// 從 LINE 介紹卡片的「立即預約」進來時，自動選好老師或方案（網址帶 ?t=tian 或 ?p=120）
+function applyQ(){try{let q=new URLSearchParams(location.search);const st=q.get('liff.state');if(st)q=new URLSearchParams(st.replace(/^[^?]*\?/,''));
+const t={tian:'田老師',zhang:'張老師',li:'李老師'}[q.get('t')],p=q.get('p');
+if(t&&S.t!==t){S.t=t;S.date=null;S.slot=null}if(p&&PL[p]&&S.p!==+p){S.p=+p;S.date=null;S.slot=null}draw()}catch(e){console.error(e)}}
+draw();applyQ();LIFF_READY.then(applyQ);
+$('ph').addEventListener('change',async()=>{const p=$('ph').value.trim();if(p.replace(/\D/g,'').length<8)return;
+try{await askLevel(p)}catch(e){return}if(LVX){showBlock();return}if(S.date&&!free(S.t,S.date).out.includes(S.slot))S.slot=null;if(S.date&&!free(S.t,S.date).out.length)S.date=null;draw()});
+$('nm').addEventListener('input',checkReturning);$('ph').addEventListener('input',checkReturning);
+$('unlock').onclick=()=>{UNLOCK=true;checkReturning()};
+$('unlock').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('unlock').click()}};
+$('mdlok').onclick=()=>$('mdl').classList.remove('on');
+Promise.all([loadBusy(),loadLevel()]).then(()=>{if(LVX){showBlock();return}if(S.date&&!free(S.t,S.date).out.length){S.date=null;S.slot=null}draw()});
+</script>
+</body>
+</html>
