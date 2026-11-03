@@ -156,9 +156,10 @@ let LVD=0,LVX=false,LVREADY=false,UID='';
 const LS={get:k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
 const blockedDay=dt=>LVX||(LVD>0&&dt<new Date(today.getFullYear(),today.getMonth(),today.getDate()+LVD));
 function setLevel(j){if(!j||typeof j!=='object')return;LVD=Math.max(0,+j.d||0);LVX=!!j.x}
+const idt=()=>{try{return (window.liff&&liff.getIDToken&&liff.getIDToken())||''}catch(e){return ''}};
 async function askLevel(phone){
-const q='?a=lv&u='+encodeURIComponent(UID)+(phone?'&p='+encodeURIComponent(phone):'')+'&t='+Date.now();
-const r=await Promise.race([fetch(BACKEND+q),new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),8000))]);
+const body=JSON.stringify({type:'lv',p:phone||'',it:idt()});   // 資安：用 LINE 的 ID token 證明身分（後台向 LINE 驗證），電話也不放網址
+const r=await Promise.race([fetch(BACKEND,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body}),new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),8000))]);
 setLevel(await r.json())}
 async function loadLevel(){
 const ph0=LS.get('yjt_phone');if(ph0&&!$('ph').value)$('ph').value=ph0;
@@ -275,7 +276,7 @@ try{
 await liff.sendMessages([{type:'text',text:messageText}]);
 LS.set('yjt_name',name);LS.set('yjt_phone',phone);LS.set('yjt_done',name+'|'+normP(phone));
 if(BACKEND){
-const payload={type:'booking',liffId:UID,name,phone,date,time,plan:duration,teacher,source:srcTxt,self:S.self,exp:expTxt,cond,note,code};
+const payload={type:'booking',idToken:idt(),name,phone,date,time,plan:duration,teacher,source:srcTxt,self:S.self,exp:expTxt,cond,note,code};
 try{await Promise.race([fetch(BACKEND,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}),new Promise(res=>setTimeout(res,8000))])}catch(e){console.error(e)}
 }
 let msg="小編收到預約申請後會盡快回覆喔！謝謝 😊";
