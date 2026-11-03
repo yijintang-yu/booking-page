@@ -236,7 +236,7 @@ draw()});
 const BACKEND='https://script.google.com/macros/s/AKfycbxiscXRC27891MpDDq9k3Ie8sxEVIJZxWDCjlY3hooWK1PuvHs1-1dErBZnuhkUaSNn/exec';
 
 // 表單送出處理（先由後台確認連結可用並登記，再傳聊天訊息）
-const YP={member:2000,non:2200,dep:1000,linkH:8,depH:6},money=n=>n.toLocaleString('en-US');   // linkH 要和 Code.gs 的 YOU_HOURS 一樣，depH 和 DEP_HOURS 一樣
+const YP={member:2000,non:2200,dep:1000,linkH:6,depH:6},money=n=>n.toLocaleString('en-US');   // linkH 要和 Code.gs 的 YOU_HOURS 一樣，depH 和 DEP_HOURS 一樣
 let YQ=null,YOK='ing';   // 連結參數、連結狀態：ing 檢查中／ok 可用／bad expired used err 不能用
 $('go').onclick=async()=>{
 const r=$('res'),name=$('nm').value.trim(),phone=$('ph').value.trim();
