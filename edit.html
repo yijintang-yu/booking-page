@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>編輯預約｜易筋堂</title>
+<style>
+body{margin:0;padding:20px 16px 40px;background:#F5EDE0;color:#5C3D1E;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+h1{margin:0 0 14px;font-size:20px;color:#9B1B1B}
+.box{background:#FBF6EE;border:1.5px solid #E4D4B4;border-radius:18px;padding:16px;max-width:520px;box-sizing:border-box}
+p{margin:4px 0;font-size:15px}
+label{display:block;margin:14px 0 6px;font-size:13px;font-weight:600;color:#8B6914}
+input,select{box-sizing:border-box;width:100%;font-size:16px;padding:10px;border:1.5px solid #E4D4B4;border-radius:10px;background:#fff;color:#5C3D1E}
+button{width:100%;margin-top:18px;font-size:16px;padding:13px;border:0;border-radius:12px;background:#9B1B1B;color:#fff}
+button:disabled{opacity:.6}
+#msg{white-space:pre-wrap;font-size:14px;margin-top:14px;line-height:1.6}
+#msg.ok{color:#2E6B2E;font-weight:700}#msg.err{color:#9B1B1B;font-weight:700}
+#msg textarea{width:100%;box-sizing:border-box;height:200px;font-size:14px;margin-top:8px;font-weight:400;color:#5C3D1E}
+.ld{color:#8A7560;font-size:14px}
+</style>
+</head>
+<body>
+<h1>編輯預約</h1>
+<div class="box" id="box"><div class="ld">載入中…</div></div>
+<script>
+// 預約後台（Apps Script「易筋堂預約通知」的 /exec 網址，和 booking.html 的 BACKEND 一樣）
+const BACKEND='https://script.google.com/macros/s/AKfycbxiscXRC27891MpDDq9k3Ie8sxEVIJZxWDCjlY3hooWK1PuvHs1-1dErBZnuhkUaSNn/exec';
+const $=i=>document.getElementById(i);
+const Q=new URLSearchParams(location.search),ID=Q.get('id')||'',K=Q.get('k')||'',SK=Q.get('s')||'';
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const opt=(a,cur)=>(a.includes(cur)?a:[cur].concat(a)).map(x=>`<option${x===cur?' selected':''}>${esc(x)}</option>`).join('');
+const timeout=(ms)=>new Promise((_,j)=>setTimeout(()=>j(new Error('連線逾時，請重新整理再試一次')),ms));
+async function load(){
+  if(!ID||!K){$('box').innerHTML='<p style="color:#9B1B1B;font-weight:700">連結不完整，請從通知卡片重新打開。</p>';return}
+  try{
+    const r=await Promise.race([fetch(BACKEND+'?a=bk&id='+encodeURIComponent(ID)+'&k='+encodeURIComponent(K)+'&t='+Date.now()),timeout(15000)]);
+    const j=await r.json();
+    if(!j.ok){$('box').innerHTML='<p style="color:#9B1B1B;font-weight:700">連結無效或已失效。</p>';return}
+    const b=j.r;
+    $('box').innerHTML=`<p>姓名：${esc(b.姓名)}</p><p>電話：${esc(b.電話)}</p><p>目前狀態：${esc(b.狀態||'待確認')}</p>
+<label>預約項目</label><select id="pl">${opt(j.plans,b.方案)}</select>
+<label>預約日期</label><input type="date" id="d" value="${esc(b.日期)}">
+<label>預約時間</label><select id="t">${opt(j.times,b.時間)}</select>
+<label>服務老師</label><select id="th">${opt(j.teachers,b.老師)}</select>
+<button id="go">發送更改後的預約給客人</button><div id="msg"></div>`;
+    $('go').onclick=save;
+  }catch(e){$('box').innerHTML=`<p style="color:#9B1B1B;font-weight:700">載入失敗：${esc(e.message)}</p>`}
+}
+async function save(){
+  const b=$('go'),m=$('msg');b.disabled=true;b.textContent='發送中…';m.className='';m.textContent='';
+  try{
+    const body={type:'edit',id:ID,k:K,s:SK,d:$('d').value,t:$('t').value,th:$('th').value,pl:$('pl').value};
+    const r=await Promise.race([fetch(BACKEND,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}),timeout(30000)]);
+    const j=await r.json();
+    if(j.ok){
+      const parts=String(j.msg).split('\n\n');   // 需要手動通知時，後面那段是要複製給客人的文字
+      m.className='ok';m.textContent=parts[0];
+      if(parts.length>1){const ta=document.createElement('textarea');ta.readOnly=true;ta.value=parts.slice(1).join('\n\n');m.appendChild(ta)}
+      b.textContent='已完成';
+    }else{m.className='err';m.textContent='失敗：'+(j.error||'未知錯誤');b.disabled=false;b.textContent='發送更改後的預約給客人'}
+  }catch(e){
+    m.className='err';m.textContent='沒有收到回應：'+e.message+'\n請先到試算表確認這筆預約的狀態，確認沒改到再重送，避免重複通知客人。';
+    b.disabled=false;b.textContent='發送更改後的預約給客人';
+  }
+}
+load();
+</script>
+</body>
+</html>
