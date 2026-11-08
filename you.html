@@ -279,7 +279,8 @@ if(res&&YMSG[res.error]){YOK=res.error;showSum();r.textContent=YMSG[res.error];r
 r.textContent='送出失敗，請稍後再試，或直接私訊小編。';return}
 YOK='used';
 const due=dueTxt();
-const messageText=`✅預約表單已送出✅
+const messageText=`✅ 預約申請已送出，等待小編確認中
+小編確認後會傳送「預約成功」通知給您。
 初次指定游老師需先支付定金 ${money(YP.dep)} 元，小編收到定金後會立即為您登記。
 定金付款期限：${due} 止
 

@@ -93,6 +93,7 @@ footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
 <main>
 
 <section class="card"><h2>一、選擇方案與老師</h2><div class="row two" id="plan"></div>
+<p class="note" id="pnote" style="display:none;margin-top:10px;color:var(--red);font-weight:700">※ 新客初次預約 120 分鐘，需先支付定金 1,000 元</p>
 <div class="sub">指定老師</div><div class="chips" id="tch"></div><div id="tinfo"></div></section>
 
 <section class="card"><h2>二、選擇日期與時段</h2>
@@ -106,8 +107,10 @@ footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
 <div id="welcome">👋 歡迎回來！已為您帶入上次的資料，可直接修改</div>
 <label class="f" for="nm">中文全名</label><input type="text" id="nm" autocomplete="name" placeholder="請輸入中文全名">
 <label class="f" for="ph">手機號碼</label><input type="tel" id="ph" autocomplete="tel" inputmode="tel" placeholder="請輸入手機號碼">
+<div id="ncst" class="hint" style="display:none;margin:8px 0 0"></div>
 <label class="f">是否為本人預約</label><p class="hint">※ 需由本人使用<b>自己的 LINE 帳號</b>預約，才視為本人預約、享有會員價。<br>以下情況請選「否」：<br>・用自己的帳號幫家人、朋友預約<br>・用家人、朋友的帳號幫自己預約</p><div class="chips" id="self"></div>
-<div id="srcwrap"><label class="f">如何得知本店？</label><div class="chips" id="src"></div></div></section>
+<div id="srcwrap"><label class="f">如何得知本店？</label><div class="chips" id="src"></div></div>
+<div id="firstwrap" style="display:none"><label class="f">是否第一次到易筋堂？</label><div class="chips" id="first"></div></div></section>
 
 <section class="card" id="s4"><h2>四、整復前安心確認</h2>
 <div id="lockbar" aria-live="polite"><span>✅ 您之前已填寫過，本次不需再填</span><a id="unlock" role="button" tabindex="0">狀況有變更</a></div>
@@ -117,6 +120,17 @@ footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
 <input type="text" id="oc" placeholder="其他特殊狀況或避開部位（選填）" style="margin-top:10px">
 <div class="tip">💡 <b>貼心提醒：</b><br>我們的老師皆具備專業手法，過程中若有力道調整需求，或對特定動作感到不安，請務必隨時告知老師，我們會立即為您調整。感謝😊</div></div>
 <label class="f" for="mm">留言備註</label><textarea id="mm" placeholder="若有額外需求或手術部位請在此留言"></textarea></section>
+
+<section class="card" id="s5" style="display:none"><h2>五、定金與預約規範</h2>
+<p style="margin:0 0 10px;line-height:1.8">新客初次預約 120 分鐘需先支付<b style="color:var(--red)">定金 1,000 元</b>，請詳閱並同意以下預約規範。小編收到定金後會立即為您登記。</p>
+<div class="tip" style="margin-top:0"><b>1. 變更／取消：</b>預約 48 小時前可改期一次；若於 48 小時內取消或改期，定金不予退還或保留。<br><b>2. 名額轉讓：</b>如無法前來可轉讓給親友，請提前通知小編。<br><b>3. 付款期限：</b>送出後小編會告知付款期限，若未於期限內完成付款，該預約空檔將自動釋出。</div>
+<label style="display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-weight:700;line-height:1.5;cursor:pointer"><input type="checkbox" id="agree" style="width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:#9B1B1B">我已詳閱並同意以上預約規範</label>
+<div id="bank" style="display:none;margin-top:14px;border:1.5px solid var(--bd);border-radius:14px;padding:12px 14px;line-height:1.9;background:var(--card)">
+<div style="font-weight:700;color:var(--red)">【匯款資訊】</div>
+<div>永豐銀行（807）</div>
+<div>帳號：<b>11601801828158</b> <button type="button" id="cpa" style="margin-left:6px;font:inherit;font-size:13px;padding:3px 10px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);color:var(--gold);cursor:pointer">複製帳號</button></div>
+<div>戶名：易筋平衡工作室</div>
+<div style="font-size:13px;color:var(--mut)">送出預約後，小編會告知付款期限。轉帳後請在聊天室提供帳號後五碼或交易截圖，謝謝您😊</div></div></section>
 
 <button type="button" class="go" id="go">確認送出預約</button>
 <div id="res"></div>
@@ -144,7 +158,22 @@ const TI={
 };
 const PL={60:'60分鐘',120:'120分鐘'},PN={60:'全方位放鬆整復',120:'精緻全方位放鬆整復'};
 const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-const S={p:60,t:'any',y:today.getFullYear(),m:today.getMonth(),date:null,slot:null,self:'是',src:'網路',exp:'',av:[]};
+const S={p:60,t:'any',y:today.getFullYear(),m:today.getMonth(),date:null,slot:null,self:'是',src:'網路',exp:'',av:[],first:''};
+// 新客初次預約 120 分鐘需付定金：輸入姓名電話後由後台判斷是不是新客（和行事曆標 N 的規則一樣）
+const DEP={amt:1000,plan:120};
+let NC=null,NCK='',NCING=null;   // NC：true 新客／false 舊客／'err' 查不到（改問客人）／null 還沒查
+const needDep=()=>S.p===DEP.plan&&(NC===true||(NC==='err'&&S.first==='是'));
+async function checkNew(){
+const nm=$('nm').value.trim(),ph=$('ph').value.trim(),k=nm+'|'+ph.replace(/\D/g,'');
+if(S.p!==DEP.plan||nm.length<2||ph.replace(/\D/g,'').length<8)return;
+if(k===NCK&&NC!==null)return;
+if(NCING&&k===NCK)return NCING;
+NCK=k;NC=null;draw();
+NCING=(async()=>{try{
+const r=await Promise.race([fetch(BACKEND,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({type:'nc',n:nm,p:ph,it:idt()})}),new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),15000))]);
+const j=await r.json();NC=j&&j.ok?!!j.n:'err'}catch(e){console.error(e);NC='err'}
+if(k!==NCK)return;NCING=null;draw()})();
+return NCING}
 // 各老師班表：回傳 [開始,結束) 小時；休假回傳 null（日曆上不顯示任何字，只是不能點）
 // ===== 空檔資料（讀取各老師 Google 行事曆，與空檔查詢頁同一個網址）=====
 const API_URL='https://script.google.com/macros/s/AKfycbwcbu2XKp9O6ipobiU-XWFF0zpOVOIRXLcPXUXwNKP-1Zpb7lJyGtaEHf_r9ffJH6foKg/exec';
@@ -221,9 +250,16 @@ $('slots').innerHTML=fs.map(x=>{const w=who(x);return chip('s',x,x+':00'+(w?`<sm
 $('self').innerHTML=['是','否'].map(x=>chip('self',x,x,S.self===x)).join('');
 $('src').innerHTML=['網路','親友介紹','路過','住附近'].map(x=>chip('src',x,x,S.src===x)).join('');
 $('exp').innerHTML=['是','否'].map(x=>chip('exp',x,x,S.exp===x)).join('');
-$('av').innerHTML=['懷孕','曾動過手術（請在備註補充手術部位）','皮膚較敏感','無特殊狀況'].map(x=>chip('av',x,x,S.av.includes(x))).join('')}
+$('av').innerHTML=['懷孕','曾動過手術（請在備註補充手術部位）','皮膚較敏感','無特殊狀況'].map(x=>chip('av',x,x,S.av.includes(x))).join('');
+const p120=S.p===DEP.plan;
+$('pnote').style.display=p120?'block':'none';
+const st=$('ncst');st.style.display=p120&&NC===null&&NCING?'block':'none';st.textContent='確認預約條件中…';
+$('firstwrap').style.display=p120&&NC==='err'?'block':'none';
+$('first').innerHTML=['是','否'].map(x=>chip('first',x,x,S.first===x)).join('');
+$('s5').style.display=needDep()?'block':'none';
+$('bank').style.display=needDep()&&$('agree').checked?'block':'none'}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,v=b.dataset.v;
-if(a==='p'){S.p=+v;if(S.date&&!free(S.t,S.date).out.includes(S.slot))S.slot=null}
+if(a==='p'){S.p=+v;if(S.date&&!free(S.t,S.date).out.includes(S.slot))S.slot=null;setTimeout(checkNew,0)}
 else if(a==='t'){S.t=v;S.slot=null;if(S.date&&!free(S.t,S.date).out.length)S.date=null}
 else if(a==='nav'){const n=S.y*12+S.m+ +v;S.y=Math.floor(n/12);S.m=n%12}
 else if(a==='d'){S.date=new Date(S.y,S.m,+v);S.slot=null}
@@ -240,6 +276,9 @@ $('go').onclick=async()=>{
 const r=$('res'),name=$('nm').value.trim(),phone=$('ph').value.trim();
 if(S.t==='游老師'){r.textContent='游老師班表不定，若要指定游老師者請直接聯繫小編。';return}
 if(!name||!phone||!S.date||S.slot===null){r.textContent='請填寫姓名、手機，並選擇日期與時段。';return}
+if(S.p===DEP.plan&&NC===null){const b0=$('go');b0.disabled=true;b0.textContent='確認預約條件中…';await checkNew();b0.disabled=false;b0.textContent='確認送出預約'}
+if(S.p===DEP.plan&&NC==='err'&&!S.first){r.textContent='請選擇「是否第一次到易筋堂」。';$('firstwrap').scrollIntoView({behavior:'smooth',block:'center'});return}
+if(needDep()&&!$('agree').checked){r.textContent='新客初次預約 120 分鐘需先付定金，請閱讀「五、定金與預約規範」並勾選同意。';$('s5').scrollIntoView({behavior:'smooth',block:'start'});return}
 r.textContent='';
 if(LVX){showBlock();return}
 const btn0=$('go');btn0.disabled=true;btn0.textContent='確認空檔中…';
@@ -261,8 +300,10 @@ checkReturning();
 const srcTxt=RT?'沿用上次':S.src,expTxt=RT?'沿用上次':(S.exp||'未填寫');
 if(RT)cond='沿用上次';
 const code=Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x%32]).join('');
-const messageText=`✅預約表單已送出✅
-送出後需由小編確認，才算預約成功。
+const dep=needDep();
+const messageText=`✅ 預約申請已送出，等待小編確認中
+小編確認後會傳送「預約成功」通知給您。${dep?`
+⚠️ 新客初次預約 120 分鐘，需先支付定金 ${DEP.amt.toLocaleString('en-US')} 元，小編收到定金後會立即為您登記。`:''}
 
 1、中文全名：${name}
 2、聯絡電話：${phone}
@@ -273,7 +314,8 @@ const messageText=`✅預約表單已送出✅
 7、是否本人：${S.self}
 8、先前經驗：${expTxt}
 9、特殊狀況：${cond}
-10、留言備註：${note}
+10、留言備註：${note}${dep?`
+11、預約規範：已同意`:''}
 預約編號：${code}`;
 const btn=$('go');btn.disabled=true;btn.textContent='送出中…';
 let chatOk=true,chatErr='';
@@ -281,12 +323,13 @@ try{await liff.sendMessages([{type:'text',text:messageText}])}catch(err){chatOk=
 let backOk=false;
 if(BACKEND){
 const payload={type:'booking',idToken:idt(),name,phone,date,time,plan:duration,teacher,source:srcTxt,self:S.self,exp:expTxt,cond,
-note:chatOk?note:'【客人的 LINE 沒有傳出預約訊息，請在聊天室手動回覆】'+(note==='無'?'':note),code};
+note:chatOk?note:'【客人的 LINE 沒有傳出預約訊息，請在聊天室手動回覆】'+(note==='無'?'':note),code,dep:dep?1:0};
 try{const res=await Promise.race([fetch(BACKEND,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}),new Promise(res=>setTimeout(()=>res(null),8000))]);backOk=!!res}catch(e){console.error(e)}
 }
 if(!chatOk&&!backOk){alert("發送失敗，請重試或直接私訊小編。\n錯誤訊息："+chatErr);btn.disabled=false;btn.textContent='確認送出預約';return}
 LS.set('yjt_name',name);LS.set('yjt_phone',phone);LS.set('yjt_done',name+'|'+normP(phone));
 let msg=chatOk?"小編收到預約申請後會盡快回覆喔！謝謝 😊":"預約申請已送出！\n小編會在 LINE 聊天室跟您確認，請稍候 😊\n（若一段時間沒收到回覆，請直接私訊小編）";
+if(dep)msg="已送出！請轉帳定金 "+DEP.amt.toLocaleString('en-US')+" 元：\n永豐銀行（807）\n帳號：11601801828158\n戶名：易筋平衡工作室\n\n小編會告知付款期限，轉帳後請在聊天室提供帳號後五碼或交易截圖，小編收到定金後會立即為您登記 😊";
 if(S.self==="否"){msg+="\n\n⚠️ 貼心提醒：非本人預約方案恕不適用會員優惠，將以原價計費：\n• 60分鐘：2,000元\n• 120分鐘：4,000元"}
 alert(msg);liff.closeWindow();};
 // 從 LINE 介紹卡片的「立即預約」進來時，自動選好老師或方案（網址帶 ?t=tian 或 ?p=120）
@@ -300,7 +343,11 @@ $('nm').addEventListener('input',checkReturning);$('ph').addEventListener('input
 $('unlock').onclick=()=>{UNLOCK=true;checkReturning()};
 $('unlock').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('unlock').click()}};
 $('mdlok').onclick=()=>$('mdl').classList.remove('on');
-Promise.all([loadBusy(),loadLevel()]).then(()=>{if(LVX){showBlock();return}if(S.date&&!free(S.t,S.date).out.length){S.date=null;S.slot=null}draw()});
+$('nm').addEventListener('change',checkNew);$('ph').addEventListener('change',checkNew);
+$('agree').onchange=()=>{$('bank').style.display=needDep()&&$('agree').checked?'block':'none'};
+$('cpa').onclick=()=>{const t='11601801828158',b=$('cpa'),done=()=>{b.textContent='已複製'},f=()=>{const i=document.createElement('input');i.value=t;document.body.appendChild(i);i.select();try{if(document.execCommand('copy'))done()}catch(e){}i.remove()};
+if(navigator.clipboard)navigator.clipboard.writeText(t).then(done,f);else f()};
+Promise.all([loadBusy(),loadLevel()]).then(()=>{if(LVX){showBlock();return}if(S.date&&!free(S.t,S.date).out.length){S.date=null;S.slot=null}draw();checkNew()});
 </script>
 </body>
 </html>
