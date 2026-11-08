@@ -134,6 +134,11 @@ footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
 
 <button type="button" class="go" id="go">確認送出預約</button>
 <div id="res"></div>
+<div id="done" role="dialog" aria-modal="true" style="position:fixed;inset:0;background:rgba(40,25,15,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:10"><div style="background:var(--card);border-radius:20px;padding:22px 20px 18px;width:100%;max-width:340px;max-height:90vh;overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.2)">
+<div style="font-weight:700;font-size:18px;color:var(--red);margin-bottom:12px">✅ 預約申請已送出</div>
+<div id="donetx" style="white-space:pre-line;font-size:15px;line-height:1.8"></div>
+<button type="button" id="donecp" style="display:none;margin-top:12px;width:100%;font:inherit;font-size:15px;padding:10px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--gold);cursor:pointer">複製匯款帳號</button>
+<button type="button" id="doneok" style="margin-top:10px;width:100%;font:inherit;font-size:15px;letter-spacing:.2em;color:#fff;background:var(--red);border:0;border-radius:12px;padding:11px;cursor:pointer">我知道了</button></div></div>
 <div id="mdl" role="dialog" aria-modal="true"><div class="bx"><div class="tt">無可預約時段</div><button type="button" id="mdlok">確定</button></div></div>
 <footer>新北市永和區信義路88號 · 頂溪捷運站步行 5 分鐘</footer>
 </main>
@@ -329,9 +334,14 @@ try{const res=await Promise.race([fetch(BACKEND,{method:'POST',headers:{'Content
 if(!chatOk&&!backOk){alert("發送失敗，請重試或直接私訊小編。\n錯誤訊息："+chatErr);btn.disabled=false;btn.textContent='確認送出預約';return}
 LS.set('yjt_name',name);LS.set('yjt_phone',phone);LS.set('yjt_done',name+'|'+normP(phone));
 let msg=chatOk?"小編收到預約申請後會盡快回覆喔！謝謝 😊":"預約申請已送出！\n小編會在 LINE 聊天室跟您確認，請稍候 😊\n（若一段時間沒收到回覆，請直接私訊小編）";
-if(dep)msg="已送出！請轉帳定金 "+DEP.amt.toLocaleString('en-US')+" 元：\n永豐銀行（807）\n帳號：11601801828158\n戶名：易筋平衡工作室\n\n小編會告知付款期限，轉帳後請在聊天室提供帳號後五碼或交易截圖，小編收到定金後會立即為您登記 😊";
+if(dep)msg="請轉帳定金 "+DEP.amt.toLocaleString('en-US')+" 元：\n永豐銀行（807）\n帳號：11601801828158\n戶名：易筋平衡工作室\n\n小編會告知付款期限，轉帳後請在聊天室提供帳號後五碼或交易截圖，小編收到定金後會立即為您登記 😊";
 if(S.self==="否"){msg+="\n\n⚠️ 貼心提醒：非本人預約方案恕不適用會員優惠，將以原價計費：\n• 60分鐘：2,000元\n• 120分鐘：4,000元"}
-alert(msg);liff.closeWindow();};
+showDone(msg,dep);$('go').textContent='已送出';};
+// 送出後的結果畫面（不用 alert：有些手機的 LINE 會直接關掉網頁，客人看不到帳號）
+function showDone(t,bank){$('donetx').textContent=t;$('donecp').style.display=bank?'block':'none';$('done').style.display='flex'}
+$('donecp').onclick=()=>{const t='11601801828158',b=$('donecp'),ok=()=>{b.textContent='✅ 已複製帳號'},f=()=>{const i=document.createElement('input');i.value=t;document.body.appendChild(i);i.select();try{if(document.execCommand('copy'))ok()}catch(e){}i.remove()};if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,f);else f()};
+$('doneok').onclick=()=>{$('done').style.display='none';try{liff.closeWindow()}catch(e){}};
+
 // 從 LINE 介紹卡片的「立即預約」進來時，自動選好老師或方案（網址帶 ?t=tian 或 ?p=120）
 function applyQ(){try{let q=new URLSearchParams(location.search);const st=q.get('liff.state');if(st)q=new URLSearchParams(st.replace(/^[^?]*\?/,''));
 const t={tian:'田老師',zhang:'張老師',li:'李老師'}[q.get('t')],p=q.get('p');
