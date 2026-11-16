@@ -17,6 +17,14 @@ button:disabled{opacity:.6}
 #msg.ok{color:#2E6B2E;font-weight:700}#msg.err{color:#9B1B1B;font-weight:700}
 #msg textarea{width:100%;box-sizing:border-box;height:200px;font-size:14px;margin-top:8px;font-weight:400;color:#5C3D1E}
 .ld{color:#8A7560;font-size:14px}
+.st{font-size:14px;color:#8A7560;margin:0 0 4px}.st b{color:#5C3D1E}
+.g2{display:flex;gap:10px}.g2>div{flex:1;min-width:0}
+input.chg,select.chg{border-color:#9B1B1B;background:#FFF8F5}
+.sync{margin-top:14px;padding:10px 12px;border-radius:12px;background:#F3EAD8;font-size:13px;line-height:1.7;color:#5C3D1E}
+.sync b{color:#9B1B1B}
+.ck{display:flex;gap:8px;align-items:flex-start;margin-top:14px;font-size:14px;font-weight:600;line-height:1.5}
+.ck input{width:20px;height:20px;margin:1px 0 0;flex:none}.ck small{display:block;font-weight:400;color:#8A7560;font-size:12px}
+.ck.lock{opacity:.75}
 </style>
 </head>
 <body>
@@ -30,6 +38,33 @@ const Q=new URLSearchParams(location.search),ID=Q.get('id')||'',K=Q.get('k')||''
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const opt=(a,cur)=>(a.includes(cur)?a:[cur].concat(a)).map(x=>`<option${x===cur?' selected':''}>${esc(x)}</option>`).join('');
 const timeout=(ms)=>new Promise((_,j)=>setTimeout(()=>j(new Error('連線逾時，請重新整理再試一次')),ms));
+let B={},PENDING=false,touched=false;
+const normP=p=>{let d=String(p||'').replace(/\D/g,'');if(d.indexOf('886')===0&&d.length>=11)d='0'+d.slice(3);return d};
+// 改了什麼：基本資料（姓名、電話）、時段（項目、日期、時間、老師）
+function diff(){
+  const nm=$('nm').value.trim(),ph=$('ph').value.trim();
+  const info=nm!==B.姓名||normP(ph)!==normP(B.電話);
+  const when=$('pl').value!==B.方案||$('d').value!==B.日期||$('t').value!==B.時間||$('th').value!==B.老師;
+  return {info,when};
+}
+function upd(e){
+  if(e&&e.target&&e.target.id==='snd')touched=true;
+  const c=diff(),ck=$('snd'),w=$('ckw');
+  [['nm',$('nm').value.trim()!==B.姓名],['ph',normP($('ph').value)!==normP(B.電話)],['pl',$('pl').value!==B.方案],['d',$('d').value!==B.日期],['t',$('t').value!==B.時間],['th',$('th').value!==B.老師]]
+    .forEach(([i,on])=>$(i).classList.toggle('chg',on));
+  // 待確認，或改了時段：一定要傳卡片給客人（和原本一樣）；已確認的只改姓名電話：自己選要不要傳
+  const must=c.when||(PENDING&&B.老師==='不指定');
+  const onlyInfoPending=PENDING&&!c.when;
+  w.style.display=onlyInfoPending?'none':'flex';
+  if(must){ck.checked=true;ck.disabled=true;w.classList.add('lock')}
+  else{ck.disabled=false;w.classList.remove('lock');if(!touched)ck.checked=false}
+  $('ckt').innerHTML='傳更新後的預約卡片給客人'+(must?'<small>改了日期、時間、老師或項目，一定會通知客人（用 1 則）</small>':'<small>只改姓名、電話時可以不傳；勾選會用 1 則</small>');
+  const where=['預約試算表','客人名單（客戶管理）','易筋堂客戶名單'];
+  if(!PENDING||c.when)where.unshift(($('th').value==='不指定'?'':$('th').value)+'行事曆');
+  $('sync').innerHTML=c.info||c.when?'送出後會一起更新：<b>'+where.join('、')+'</b>'+(onlyInfoPending?'<br>這筆還沒確認，存好後請回通知卡片按「確認預約」':''):'還沒有修改任何欄位';
+  const g=$('go');g.disabled=!(c.info||c.when);
+  g.textContent=onlyInfoPending?'儲存修改':ck.checked?'儲存並發送給客人':'只儲存，不通知客人';
+}
 async function load(){
   if(!ID||!K){$('box').innerHTML='<p style="color:#9B1B1B;font-weight:700">連結不完整，請從通知卡片重新打開。</p>';return}
   try{
@@ -37,19 +72,28 @@ async function load(){
     const j=await r.json();
     if(!j.ok){$('box').innerHTML='<p style="color:#9B1B1B;font-weight:700">連結無效或已失效。</p>';return}
     const b=j.r;
-    $('box').innerHTML=`<p>姓名：${esc(b.姓名)}</p><p>電話：${esc(b.電話)}</p><p>目前狀態：${esc(b.狀態||'待確認')}</p>
+    B=b;PENDING=!b.狀態||b.狀態==='待確認';
+    $('box').innerHTML=`<p class="st">目前狀態：<b>${esc(b.狀態||'待確認')}</b></p>
+<div class="g2"><div><label>姓名</label><input id="nm" value="${esc(b.姓名)}" maxlength="20" autocomplete="off"></div>
+<div><label>電話</label><input id="ph" type="tel" value="${esc(b.電話)}" maxlength="20" autocomplete="off"></div></div>
 <label>預約項目</label><select id="pl">${opt(j.plans,b.方案)}</select>
 <label>預約日期</label><input type="date" id="d" value="${esc(b.日期)}">
 <label>預約時間</label><select id="t">${opt(j.times,b.時間)}</select>
 <label>服務老師</label><select id="th">${opt(j.teachers,b.老師)}</select>
-<button id="go">發送更改後的預約給客人</button><div id="msg"></div>`;
-    $('go').onclick=save;
+<div class="sync" id="sync"></div>
+<label class="ck" id="ckw"><input type="checkbox" id="snd"><span id="ckt"></span></label>
+<button id="go"></button><div id="msg"></div>`;
+    ['nm','ph','pl','d','t','th'].forEach(i=>{$(i).oninput=$(i).onchange=upd});
+    $('snd').onchange=upd;$('go').onclick=save;upd();
   }catch(e){$('box').innerHTML=`<p style="color:#9B1B1B;font-weight:700">載入失敗：${esc(e.message)}</p>`}
 }
 async function save(){
-  const b=$('go'),m=$('msg');b.disabled=true;b.textContent='發送中…';m.className='';m.textContent='';
+  const b=$('go'),m=$('msg');b.disabled=true;b.textContent='處理中…';m.className='';m.textContent='';
   try{
-    const body={type:'edit',id:ID,k:K,s:SK,d:$('d').value,t:$('t').value,th:$('th').value,pl:$('pl').value};
+    const nm=$('nm').value.trim(),ph=$('ph').value.trim();
+    if(!nm){m.className='err';m.textContent='請填寫姓名';b.disabled=false;upd();return}
+    if(ph&&(normP(ph).length<9||normP(ph).length>10)){m.className='err';m.textContent='電話格式不對，請輸入 09 開頭 10 碼或市話';b.disabled=false;upd();return}
+    const body={type:'edit',id:ID,k:K,s:SK,d:$('d').value,t:$('t').value,th:$('th').value,pl:$('pl').value,n:nm,p:ph,send:$('snd').checked};
     const r=await Promise.race([fetch(BACKEND,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}),timeout(30000)]);
     const j=await r.json();
     if(j.ok){
@@ -57,10 +101,10 @@ async function save(){
       m.className='ok';m.textContent=parts[0];
       if(parts.length>1){const ta=document.createElement('textarea');ta.readOnly=true;ta.value=parts.slice(1).join('\n\n');m.appendChild(ta)}
       b.textContent='已完成';
-    }else{m.className='err';m.textContent='失敗：'+(j.error||'未知錯誤');b.disabled=false;b.textContent='發送更改後的預約給客人'}
+    }else{m.className='err';m.textContent='失敗：'+(j.error||'未知錯誤');b.disabled=false;upd()}
   }catch(e){
     m.className='err';m.textContent='沒有收到回應：'+e.message+'\n請先到試算表確認這筆預約的狀態，確認沒改到再重送，避免重複通知客人。';
-    b.disabled=false;b.textContent='發送更改後的預約給客人';
+    b.disabled=false;upd();
   }
 }
 load();
