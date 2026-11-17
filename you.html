@@ -85,6 +85,14 @@ input:focus,textarea:focus{outline:2px solid var(--red);outline-offset:1px}
 .tinfo p{margin:12px 0 0;font-size:13px;line-height:1.8;text-align:left}
 .tinfo .red{color:var(--red);font-weight:700;margin-top:14px}
 .tinfo .red a{color:var(--red);text-decoration:underline}
+#lk{position:fixed;inset:0;background:rgba(40,25,15,.55);display:none;align-items:center;justify-content:center;padding:24px;z-index:11}
+#lk.on{display:flex}
+#lk .bx{background:var(--card);border-radius:20px;padding:26px 22px 18px;width:100%;max-width:320px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+#lk .ic{font-size:40px;line-height:1;margin-bottom:10px}
+#lk .tt{font-weight:900;font-size:19px;color:var(--red);margin-bottom:10px}
+#lk .tx{white-space:pre-line;font-size:15px;line-height:1.8;margin-bottom:18px;text-align:left}
+#lk button{font:inherit;font-size:15px;letter-spacing:.1em;color:#fff;background:var(--red);border:0;border-radius:12px;padding:11px 0;width:100%;cursor:pointer}
+body.locked #s3,body.locked #s4,body.locked #s5,body.locked #go{opacity:.4;filter:grayscale(.7);pointer-events:none;user-select:none}
 footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
 </style>
 <style>h2,#q4>p.note,#mdl .tt{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif !important}h2{font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px}h2::before{content:"";width:5px;height:18px;border-radius:3px;background:var(--red);flex:none}#q4>p.note{font-weight:700 !important}</style></head>
@@ -130,6 +138,7 @@ footer{text-align:center;font-size:12px;color:var(--mut);padding:6px 0 0}
 <div id="donetx" style="white-space:pre-line;font-size:15px;line-height:1.8"></div>
 <button type="button" id="donecp" style="display:none;margin-top:12px;width:100%;font:inherit;font-size:15px;padding:10px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--gold);cursor:pointer">複製匯款帳號</button>
 <button type="button" id="doneok" style="margin-top:10px;width:100%;font:inherit;font-size:15px;letter-spacing:.2em;color:#fff;background:var(--red);border:0;border-radius:12px;padding:11px;cursor:pointer">我知道了</button></div></div>
+<div id="lk" role="alertdialog" aria-modal="true" aria-labelledby="lktt"><div class="bx"><div class="ic">⏰</div><div class="tt" id="lktt"></div><div class="tx" id="lktx"></div><button type="button" id="lkok">回到聊天室聯繫小編</button></div></div>
 <div id="mdl" role="dialog" aria-modal="true"><div class="bx"><div class="tt">無可預約時段</div><button type="button" id="mdlok">確定</button></div></div>
 <footer>新北市永和區信義路88號 · 頂溪捷運站步行 5 分鐘</footer>
 </main>
@@ -250,7 +259,8 @@ const YP={member:2000,non:2200,dep:1000,linkH:6,depH:6},money=n=>n.toLocaleStrin
 let YQ=null,YOK='ing';   // 連結參數、連結狀態：ing 檢查中／ok 可用／bad expired used err 不能用
 $('go').onclick=async()=>{
 const r=$('res'),name=$('nm').value.trim(),phone=$('ph').value.trim();
-if(YOK!=='ok'||!S.date){r.textContent=YMSG[YOK]||YMSG.bad;return}
+if(YQ&&Date.now()>+YQ.x)YOK='expired';
+if(YOK!=='ok'||!S.date){r.textContent=YMSG[YOK]||YMSG.bad;showSum();return}
 if(!name||!phone){r.textContent='請填寫姓名和手機。';return}
 if(!S.exp){r.textContent='請回答「先前是否有推拿整復或按摩的經驗」。';return}
 if(!S.av.length&&!$('oc').value.trim()){r.textContent='請勾選特殊狀況（沒有請選「無特殊狀況」）。';return}
@@ -312,7 +322,7 @@ $('donecp').onclick=()=>{const t='11601801828158',b=$('donecp'),ok=()=>{b.textCo
 $('doneok').onclick=()=>{$('done').style.display='none';try{liff.closeWindow()}catch(e){}};
 
 // 游老師專屬頁：網址帶 ?d=日期&h=幾點&p=60&x=失效時間&s=簽章（由「新增預約」頁產生，8 小時失效、只能送出一次）
-const YMSG={ing:'連結確認中，請稍候…',bad:'連結無效，請聯繫小編重新取得預約連結。',expired:'連結已失效，請聯繫小編重新取得預約連結。',used:'這個連結已經送出過預約了。如需修改，請直接聯繫小編。',err:'連結確認失敗，請重新整理，或聯繫小編。'};
+const YMSG={ing:'連結確認中，請稍候…',bad:'連結無效，請聯繫小編重新取得預約連結。',expired:'付款期限已過，連結已失效，請聯繫小編重新取得預約連結。',used:'這個連結已經送出過預約了。如需修改，請直接聯繫小編。',err:'連結確認失敗，請重新整理，或聯繫小編。'};
 function applyQ(){try{let q=new URLSearchParams(location.search);const st=q.get('liff.state');if(st)q=new URLSearchParams(st.replace(/^[^?]*\?/,''));
 const d=q.get('d')||'',m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(d),h=+q.get('h'),p=+(q.get('p')||60),x=+q.get('x'),sg=q.get('s')||'';
 if(m&&H.includes(h)&&x&&sg){S.date=new Date(+m[1],+m[2]-1,+m[3]);S.slot=h;if(PL[p])S.p=p;
@@ -324,8 +334,19 @@ const j=await r.json();YOK=j.ok?'ok':(j.why||'bad')}catch(e){console.error(e);YO
 // 定金付款期限：產生連結後 6 小時（由連結失效時間往回推）
 function dueTxt(){if(!YQ)return '';const p2=n=>String(n).padStart(2,'0'),d=new Date(+YQ.x-YP.linkH*3600000+YP.depH*3600000);
 return (d.getMonth()+1)+'/'+d.getDate()+'（'+'日一二三四五六'[d.getDay()]+'）'+p2(d.getHours())+':'+p2(d.getMinutes())}
+// 連結不能用（付款期限已過、已送出過、無效）：整頁凍結，跳出視窗
+const LK={expired:['⏰','付款期限已過','連結已失效，保留的時段已釋出。\n如仍想預約，請聯繫小編重新取得預約連結。'],
+used:['✅','此連結已送出過預約','這個連結只能送出一次。\n如需修改預約內容，請直接聯繫小編。'],
+bad:['⚠️','連結無效','請聯繫小編重新取得預約連結。'],
+err:['⚠️','連結確認失敗','請確認網路連線後重新開啟連結，或聯繫小編。']};
+function lockPage(k){const L=LK[k]||LK.bad;document.body.classList.add('locked');
+document.querySelectorAll('#s3 input,#s3 textarea,#s4 input,#s4 textarea,#s5 input,#s5 button').forEach(e=>e.disabled=true);
+$('lk').querySelector('.ic').textContent=L[0];$('lktt').textContent=L[1];$('lktx').textContent=L[2];$('lk').classList.add('on')}
+$('lkok').onclick=()=>{try{if(window.liff&&liff.isInClient()){liff.closeWindow();return}}catch(e){}$('lk').classList.remove('on')};
+// 頁面開著時付款期限到了，也立刻凍結
+setInterval(()=>{if(YQ&&(YOK==='ok'||YOK==='ing')&&Date.now()>+YQ.x){YOK='expired';showSum()}},20000);
 function showSum(){const p2=n=>String(n).padStart(2,'0');if(YQ)$('dueTxt').textContent=dueTxt();
-if((YOK!=='ok'&&YOK!=='ing')||!S.date){$('ysum').innerHTML=`<p style="color:var(--red);font-weight:700;margin:0">${YMSG[YOK]||YMSG.bad}</p>`;$('go').disabled=true;return}
+if((YOK!=='ok'&&YOK!=='ing')||!S.date){lockPage(YOK);$('ysum').innerHTML=`<p style="color:var(--red);font-weight:700;margin:0">${YMSG[YOK]||YMSG.bad}</p>`;$('go').disabled=true;return}
 const w='日一二三四五六'[S.date.getDay()];
 $('ysum').innerHTML=`<div style="display:flex;align-items:center;gap:14px"><img src="${IMG['游老師']}" alt="游老師" style="width:68px;height:68px;border-radius:50%;object-fit:cover;flex:none"><div style="line-height:1.7"><b style="font-size:18px">游老師</b><div>${S.date.getFullYear()}/${S.date.getMonth()+1}/${S.date.getDate()}（${w}）${p2(S.slot)}:00</div><div>${PL[S.p]} ${PN[S.p]}</div></div></div>
 <div style="margin-top:12px;border-top:1px solid #E4D4B4;padding-top:10px;line-height:1.9;font-size:15px"><div>會員價（本人預約）：<b style="color:var(--red)">${money(YP.member)} 元</b></div><div>非本人預約（原價）：${money(YP.non)} 元</div><div>需先付定金：<b style="color:var(--red)">${money(YP.dep)} 元</b>（請見下方說明）</div></div>`
